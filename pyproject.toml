@@ -1,14 +1,22 @@
 [tool.poetry]
-name = "cloud"
+name = "luciferous-devio-index"
 version = "0.1.0"
 description = ""
 authors = ["sinofseven <em.s.00001@gmail.com>"]
 readme = "README.md"
-packages = [{include = "cloud", from = "src"}]
+packages = [{include = "luciferous_devio_index", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
+botocore = "1.23.5"
+boto3 = "1.20.5"
+boto3-stubs = {version = "1.20.5", extras = ["dynamodb", "glue", "s3", "sqs", "ssm"]}
 
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+isort = "^5.12.0"
+feedparser = "6.0.10"
 
 [build-system]
 requires = ["poetry-core"]
