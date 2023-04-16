@@ -1,0 +1,37 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  SAM_ARTIFACT_BUCKET: ${{ vars.BUCKET_NAME_SAM_ARTIFACT }}
+  ROLE_ARN_CLOUDFORMATION_DEPLOY: ${{ vars.ROLE_ARN_CLOUDFORMATION_DEPLOY }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: docker/setup-qemu-action@v2
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.9.13
+      - uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          role-to-assume: ${{ vars.ROLE_ARN_GITHUB_ACTION_CLOUDFORMATION_DEPLOY }}
+          aws-region: ap-northeast-1
+      - uses: aws-actions/setup-sam@v2
+      - run: pip install poetry
+      - run: make package
+      - run: tar cf cloud.tar *
+      - uses: actions/upload-artifact@v3
+        with:
+          name: cloud.tar
+          path: cloud.tar
+      - run: make deploy

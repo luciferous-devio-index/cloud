@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "disable_existing_loggers": false,
+  "formatters": {
+    "logFormatter": {
+      "()": "luciferous_devio_index.common.logger.json_log_formatter.JsonLogFormatter"
+    }
+  },
+  "loggers": {
+    "console": {
+      "handlers": [
+        "consoleHandler"
+      ],
+      "level": "DEBUG"
+    },
+    "boto": {
+      "handlers": [
+        "consoleHandler"
+      ],
+      "level": "INFO"
+    },
+    "boto3": {
+      "handlers": [
+        "consoleHandler"
+      ],
+      "level": "INFO"
+    },
+    "botocore": {
+      "handlers": [
+        "consoleHandler"
+      ],
+      "level": "INFO"
+    },
+    "urllib3.connectionpool": {
+      "handlers": [
+        "consoleHandler"
+      ],
+      "level": "INFO"
+    },
+    "awswrangler": {
+      "handlers": [
+        "consoleHandler"
+      ],
+      "level": "INFO"
+    }
+  },
+  "handlers": {
+    "consoleHandler": {
+      "class": "logging.StreamHandler",
+      "level": "DEBUG",
+      "formatter": "logFormatter",
+      "stream": "ext://sys.stdout"
+    }
+  },
+  "root": {
+    "level": "DEBUG",
+    "handlers": [
+      "consoleHandler"
+    ]
+  }
+}
