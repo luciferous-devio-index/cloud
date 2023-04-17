@@ -1,6 +1,26 @@
 Transform: AWS::Serverless-2016-10-31
 
+Parameters:
+  LayerArnBase:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /LuciferousDevIoIndex/Layer/Base
+
+  LayerArnFeedparser:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /LuciferousDevIoIndex/Layer/Feedparser
+
+Globals:
+  Function:
+    Runtime: python3.9
+    Timeout: 180
+    MemorySize: 256
+    Layers:
+      - !Ref LayerArnBase
+
 Resources:
+  TopicAlarm:
+    Type: AWS::SNS::Topic
+
   TableListPostId:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -60,3 +80,70 @@ Resources:
           Filters:
             - Pattern: "{\"eventName\": [\"INSERT\"]}"
       Target: !GetAtt QueueGetPost.Arn
+
+  BucketDevioData:
+    Type: AWS::S3::Bucket
+
+  FunctionDevioDownloader:
+    Type: AWS::Serverless::Function
+    Properties:
+      Architectures:
+        - arm64
+      AutoPublishAlias: prd
+      CodeUri: src
+      Environment:
+        Variables:
+          S3_BUCKET: !Ref BucketDevioData
+          S3_PREFIX: posts/
+          URL_DEVIO_POSTS: https://dev.classmethod.jp/wp-json/wp/v2/posts
+      Events:
+        SQS:
+          Type: SQS
+          Properties:
+            BatchSize: 1
+            Enabled: true
+            MaximumBatchingWindowInSeconds: 180
+            Queue: !Ref QueueGetPost
+      Handler: luciferous_devio_index/lambda_handler/devio_downloader.handler
+      Policies:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+      ReservedConcurrentExecutions: 1
+
+  LogStackDevioDownloader:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: logs.yml
+      Parameters:
+        FunctionName: !Ref FunctionDevioDownloader
+        TopicArn: !Ref TopicAlarm
+
+  FunctionFeedDispatcher:
+    Type: AWS::Serverless::Function
+    Properties:
+      Architectures:
+        - arm64
+      AutoPublishAlias: prd
+      CodeUri: src
+      Environment:
+        Variables:
+          url_feed: https://dev.classmethod.jp/feed
+          ddb_table_name: !Ref TableListPostId
+      Events:
+        Schedule:
+          Type: Schedule
+          Properties:
+            Enabled: true
+            Schedule: rate(15 minutes)
+      Handler: luciferous_devio_index/lambda_handler/feed_dispatcher.handler
+      Policies:
+        - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+      ReservedConcurrentExecutions: 1
+
+  LogStackFeedDispatcher:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: logs.yml
+      Parameters:
+        FunctionName: !Ref FunctionFeedDispatcher
+        TopicArn: !Ref TopicAlarm
