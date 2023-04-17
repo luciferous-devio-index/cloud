@@ -38,6 +38,7 @@ test:
 check: pyright test-unit
 
 package:
+	uuidgen > src/uuid.txt
 	sam package \
 		--s3-bucket ${SAM_ARTIFACT_BUCKET} \
 		--s3-prefix cloud \

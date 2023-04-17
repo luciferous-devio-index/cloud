@@ -260,3 +260,5 @@ cython_debug/
 #.idea/
 
 
+# Custom
+uuid.txt
