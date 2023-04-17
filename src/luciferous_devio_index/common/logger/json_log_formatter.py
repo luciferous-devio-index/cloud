@@ -4,6 +4,7 @@ import os
 from collections import UserList
 from decimal import Decimal
 from enum import Enum
+from typing import Type
 
 from boto3.dynamodb.conditions import AttributeBase, ConditionBase
 
@@ -14,6 +15,8 @@ import dataclasses
 def default(obj):
     if isinstance(obj, Decimal):
         return int(obj) if int(obj) == obj else float(obj)
+    elif isinstance(obj, Type):
+        return str(obj)
     elif isinstance(obj, (set, UserList)):
         return list(obj)
     elif isinstance(obj, ConditionBase):

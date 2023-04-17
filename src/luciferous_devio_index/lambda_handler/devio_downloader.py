@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import AnyStr
 from zlib import compress
+import json
 
 from mypy_boto3_s3 import S3Client
 
@@ -38,7 +39,9 @@ def handler(event: dict, context, s3_client: S3Client = create_client("s3")):
 def parse_post_id(*, event: dict) -> str:
     if (post_id := event.get("post_id")) is not None:
         return post_id
-    return event["Records"][0]["body"]
+    raw_ddb_event = event["Records"][0]["body"]
+    ddb_event = json.loads(raw_ddb_event)
+    return ddb_event['dynamodb']['Keys']['post_id']['S']
 
 
 @logger.logging_function(with_arg=False)
