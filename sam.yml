@@ -47,3 +47,16 @@ Resources:
                   - sqs:SendMessage
                 Resource:
                   - !GetAtt QueueGetPost.Arn
+
+  PipeDynamoDbToSqs:
+    Type: AWS::Pipes::Pipe
+    Properties:
+      RoleArn: !GetAtt RoleDynamoDbToSqs.Arn
+      Source: !GetAtt TableListPostId.StreamArn
+      SourceParameters:
+        DynamoDBStreamParameters:
+          StartingPosition: TRIM_HORIZON
+        FilterCriteria:
+          Filters:
+            - Pattern: "{\"eventName\": [\"INSERT\"]}"
+      Target: !GetAtt QueueGetPost.Arn
