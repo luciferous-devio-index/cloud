@@ -28,6 +28,7 @@ Resources:
           - Effect: Allow
             Principal:
               Service: pipes.amazonaws.com
+            Action: sts:AssumeRole
       Policies:
         - PolicyName: pipe-dynamodb-to-sqs
           PolicyDocument:
