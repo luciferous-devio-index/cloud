@@ -139,6 +139,8 @@ Resources:
       Policies:
         - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
       ReservedConcurrentExecutions: 1
+      Layers:
+        - !Ref LayerArnFeedparser
 
   LogStackFeedDispatcher:
     Type: AWS::CloudFormation::Stack
