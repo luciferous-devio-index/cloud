@@ -18,7 +18,7 @@ Resources:
       AlarmActions:
         - !Ref TopicArn
       ComparisonOperator: GreaterThanThreshold
-      EvaluationPeriods: 3
+      EvaluationPeriods: 1
       DatapointsToAlarm: 1
       Dimensions:
         - Name: FunctionName
