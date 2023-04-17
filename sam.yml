@@ -127,8 +127,8 @@ Resources:
       CodeUri: src
       Environment:
         Variables:
-          url_feed: https://dev.classmethod.jp/feed
-          ddb_table_name: !Ref TableListPostId
+          URL_FEED: https://dev.classmethod.jp/feed
+          DDB_TABLE_NAME: !Ref TableListPostId
       Events:
         Schedule:
           Type: Schedule
