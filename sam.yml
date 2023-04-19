@@ -168,10 +168,10 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${FunctionErrorNotificator}
 
-  PermissionErrorNotificator:
-    Type: AWS::Lambda::Permission
-    Properties:
-      FunctionName: !GetAtt FunctionErrorNotificator.Arn
-      Action: lambda:InvokeFunction
-      Principal: logs.amazonaws.com
-      SourceArn: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:*
+#  PermissionErrorNotificator:
+#    Type: AWS::Lambda::Permission
+#    Properties:
+#      FunctionName: !GetAtt FunctionErrorNotificator.Arn
+#      Action: lambda:InvokeFunction
+#      Principal: logs.amazonaws.com
+#      SourceArn: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:*
