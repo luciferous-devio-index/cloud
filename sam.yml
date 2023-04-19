@@ -15,7 +15,6 @@ Globals:
     Timeout: 180
     MemorySize: 256
     CodeUri: src
-    AutoPublishAlias: prd
     Layers:
       - !Ref LayerArnBase
 
@@ -91,6 +90,7 @@ Resources:
     Properties:
       Architectures:
         - arm64
+      AutoPublishAlias: prd
       Environment:
         Variables:
           S3_BUCKET: !Ref BucketDevioData
@@ -123,6 +123,7 @@ Resources:
     Properties:
       Architectures:
         - arm64
+      AutoPublishAlias: prd
       Environment:
         Variables:
           URL_FEED: https://dev.classmethod.jp/feed
