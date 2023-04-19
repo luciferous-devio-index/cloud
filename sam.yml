@@ -173,4 +173,4 @@ Resources:
       FunctionName: !GetAtt FunctionErrorNotificator.Arn
       Action: lambda:InvokeFunction
       Principal: logs.amazonaws.com
-      SourceArn: !Sub arn:aws:logs:ap-northeast-1:${AWS::AccountId}:log-group:*
+      SourceArn: !Sub arn:aws:logs:ap-northeast-1:${AWS::AccountId}:*:*
