@@ -94,7 +94,7 @@ Resources:
       Environment:
         Variables:
           S3_BUCKET: !Ref BucketDevioData
-          S3_PREFIX: posts/
+          S3_PREFIX: posts
           URL_DEVIO_POSTS: https://dev.classmethod.jp/wp-json/wp/v2/posts
       Events:
         SQS:
