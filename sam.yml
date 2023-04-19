@@ -188,7 +188,7 @@ Resources:
   SubscriptionFilterTest:
     Type: AWS::Logs::SubscriptionFilter
     Properties:
-      DestinationArn: !Sub ${FunctionErrorNotificator.Arn}:prd
+      DestinationArn: !GetAtt FunctionErrorNotificator.Arn
       FilterPattern: ERROR
       LogGroupName: !Ref LogTest
       RoleArn: !GetAtt RoleInvokeByLog.Arn
