@@ -168,28 +168,10 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${FunctionErrorNotificator}
 
-  LogTest:
-    Type: AWS::Logs::LogGroup
+  PermissionErrorNotificator:
+    Type: AWS::Lambda::Permission
     Properties:
-      LogGroupName: /natsume/notificator-test
-
-  RoleInvokeByLog:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: logs.amazonaws.com
-            Action: sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaRole
-
-  SubscriptionFilterTest:
-    Type: AWS::Logs::SubscriptionFilter
-    Properties:
-      DestinationArn: !GetAtt FunctionErrorNotificator.Arn
-      FilterPattern: ERROR
-      LogGroupName: !Ref LogTest
-      RoleArn: !GetAtt RoleInvokeByLog.Arn
+      FunctionName: !GetAtt FunctionErrorNotificator.Arn
+      Action: lambda:InvokeFunction
+      Principal: logs.amazonaws.com
+      SourceArn: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:*
