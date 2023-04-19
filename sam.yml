@@ -116,7 +116,7 @@ Resources:
       TemplateURL: log.yml
       Parameters:
         FunctionName: !Ref FunctionDevioDownloader
-        TopicArn: !Ref TopicAlarm
+        FunctionArnErrorNotificator: !GetAtt FunctionErrorNotificator.Arn
 
   FunctionFeedDispatcher:
     Type: AWS::Serverless::Function
@@ -146,7 +146,7 @@ Resources:
       TemplateURL: log.yml
       Parameters:
         FunctionName: !Ref FunctionFeedDispatcher
-        TopicArn: !Ref TopicAlarm
+        FunctionArnErrorNotificator: !GetAtt FunctionErrorNotificator.Arn
 
   FunctionErrorNotificator:
     Type: AWS::Serverless::Function
