@@ -14,6 +14,9 @@
                   <Item>
                     <option name="path" value="logs.yml" />
                   </Item>
+                  <Item>
+                    <option name="path" value="log.yml" />
+                  </Item>
                 </list>
               </option>
             </SchemaInfo>

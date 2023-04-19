@@ -2,7 +2,7 @@ Parameters:
   FunctionName:
     Type: String
 
-  TopicArn:
+  FunctionArnErrorNotificator:
     Type: String
 
 Resources:
@@ -11,21 +11,16 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${FunctionName}
 
-  Alarm:
-    Type: AWS::CloudWatch::Alarm
+  SubscriptionFilterError:
+    Type: AWS::Logs::SubscriptionFilter
     Properties:
-      ActionsEnabled: true
-      AlarmActions:
-        - !Ref TopicArn
-      ComparisonOperator: GreaterThanThreshold
-      EvaluationPeriods: 1
-      DatapointsToAlarm: 1
-      Dimensions:
-        - Name: FunctionName
-          Value: !Ref FunctionName
-      MetricName: Errors
-      Namespace: AWS/Lambda
-      Period: 60
-      Statistic: Sum
-      Threshold: 0.0
-      TreatMissingData: notBreaching
+      DestinationArn: !Ref FunctionArnErrorNotificator
+      FilterPattern: "{ $.level = \"ERROR\" }"
+      LogGroupName: !Ref LogGroup
+
+  SubscriptionFilterNotErrorFinish:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Ref FunctionArnErrorNotificator
+      FilterPattern: "?\"Task timed out after\" ?\"Process exited before completing request\""
+      LogGroupName: !Ref LogGroup
