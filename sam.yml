@@ -14,6 +14,8 @@ Globals:
     Runtime: python3.9
     Timeout: 180
     MemorySize: 256
+    CodeUri: src
+    AutoPublishAlias: prd
     Layers:
       - !Ref LayerArnBase
 
@@ -89,8 +91,6 @@ Resources:
     Properties:
       Architectures:
         - arm64
-      AutoPublishAlias: prd
-      CodeUri: src
       Environment:
         Variables:
           S3_BUCKET: !Ref BucketDevioData
@@ -108,7 +108,7 @@ Resources:
       Policies:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
-      ReservedConcurrentExecutions: 1
+      ReservedConcurrentExecutions: 3
 
   LogStackDevioDownloader:
     Type: AWS::CloudFormation::Stack
@@ -123,8 +123,6 @@ Resources:
     Properties:
       Architectures:
         - arm64
-      AutoPublishAlias: prd
-      CodeUri: src
       Environment:
         Variables:
           URL_FEED: https://dev.classmethod.jp/feed
@@ -138,7 +136,6 @@ Resources:
       Handler: luciferous_devio_index/lambda_handler/feed_dispatcher.handler
       Policies:
         - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
-      ReservedConcurrentExecutions: 1
       Layers:
         - !Ref LayerArnFeedparser
 
@@ -149,3 +146,32 @@ Resources:
       Parameters:
         FunctionName: !Ref FunctionFeedDispatcher
         TopicArn: !Ref TopicAlarm
+
+  FunctionErrorNotificator:
+    Type: AWS::Serverless::Function
+    Properties:
+      Architectures:
+        - arm64
+      Handler: luciferous_devio_index/lambda_handler/error_notificator.handler
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - kms:Decrypt
+              Resource: "*"
+        - arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess
+
+  LogErrorNotificator:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${FunctionErrorNotificator}
+
+  PermissionErrorNotificator:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt FunctionErrorNotificator.Arn
+      Action: lambda:InvokeFunction
+      Principal: logs.amazonaws.com
+      SourceAccount: !Ref AWS::AccountId
+      SourceArn: !Sub arn:aws:logs:ap-northeast-1:${AWS::AccountId}:log-group:*
