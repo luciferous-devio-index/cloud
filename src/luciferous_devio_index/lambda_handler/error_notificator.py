@@ -152,6 +152,6 @@ def post_message(*, message: str, url: str):
         headers={
             "Content-Type": "application/json",
         },
-        data=json.dumps({"text": message}),
+        data=json.dumps({"text": message}).encode(),
     )
     urlopen(req)
