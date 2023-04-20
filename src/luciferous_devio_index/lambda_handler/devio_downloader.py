@@ -1,6 +1,7 @@
 import json
 from dataclasses import dataclass
 from typing import AnyStr
+from urllib.error import HTTPError
 from zlib import compress
 
 from mypy_boto3_s3 import S3Client
@@ -25,7 +26,15 @@ logger = MyLogger(__name__)
 def handler(event: dict, context, s3_client: S3Client = create_client("s3")):
     env = load_environment(class_dataclass=EnvironmentVariables)
     post_id = parse_post_id(event=event)
-    post_data = http_client_sec3(url=f"{env.url_devio_posts}/{post_id}")
+    try:
+        post_data = http_client_sec3(url=f"{env.url_devio_posts}/{post_id}")
+    except HTTPError as e:
+        if e.status in [404, 401]:
+            logger.error(
+                f"failed to get post data: post_id={post_id} status={e.status}, err={e}"
+            )
+            return
+        raise
     save_to_s3(
         post_id=post_id,
         post_data=post_data,
