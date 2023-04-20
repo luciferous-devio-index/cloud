@@ -15,7 +15,7 @@ Resources:
     Type: AWS::Logs::SubscriptionFilter
     Properties:
       DestinationArn: !Ref FunctionArnErrorNotificator
-      FilterPattern: "{ $.levelName = \"ERROR\" }"
+      FilterPattern: "{ $.levelname = \"ERROR\" }"
       LogGroupName: !Ref LogGroup
 
   SubscriptionFilterNotErrorFinish:
