@@ -1,7 +1,9 @@
 import json
 from dataclasses import dataclass
+from io import BytesIO
 from typing import AnyStr
 from urllib.error import HTTPError
+from zipfile import ZIP_DEFLATED, ZipFile
 from zlib import compress
 
 from mypy_boto3_s3 import S3Client
@@ -62,10 +64,13 @@ def save_to_s3(
     s3_prefix: str,
     s3_client: S3Client,
 ):
-    if isinstance(post_data, str):
-        post_data = post_data.encode()
+    data = json.loads(post_data)
+    text = json.dumps(data, ensure_ascii=False)
+    io = BytesIO()
+    with ZipFile(file=io, mode="w", compression=ZIP_DEFLATED) as zf:
+        zf.writestr(f"{post_id}.json", text)
     s3_client.put_object(
         Bucket=s3_bucket,
         Key=f"{s3_prefix}/{post_id}.json.zip",
-        Body=compress(post_data, level=9),
+        Body=io.getvalue(),
     )
