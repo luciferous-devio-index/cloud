@@ -37,9 +37,9 @@ logger = MyLogger(__name__)
 def handler(event: dict, context, ssm_client: SSMClient = create_client("ssm")):
     log = parse_event(event=event)
     env = load_environment(class_dataclass=EnvironmentVariables)
-    message = create_message(log, env.aws_default_region)
+    message = create_message(log=log, region=env.aws_default_region)
     url = get_parameter_slack_incoming_webhook_url(ssm_client)
-    post_message(message, url)
+    post_message(message=message, url=url)
 
 
 @logger.logging_function()
@@ -145,7 +145,7 @@ def create_message(*, log: LogData, region: str) -> str:
 
 
 @logger.logging_function()
-def post_message(message: str, url: str):
+def post_message(*, message: str, url: str):
     req = Request(
         url=url,
         method="POST",
