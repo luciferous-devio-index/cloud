@@ -73,14 +73,15 @@ def create_url_cw_logs(
         quote_plus(quote_plus(name_log_group)).replace("%", "$"),
         "/log-events/",
         quote_plus(quote_plus(name_log_stream)).replace("%", "$"),
+        quote_plus("?").replace("%", "$"),
     ]
     if lambda_request_id is None:
         part.append(
-            quote_plus(quote_plus(f"?start={timestamp}")).replace("%", "$"),
+            quote_plus(quote_plus(f"start={timestamp}")).replace("%", "$"),
         )
     else:
         part.append(
-            quote_plus(quote_plus(f'?filterPattern="{lambda_request_id}"')).replace(
+            quote_plus(quote_plus(f'filterPattern="{lambda_request_id}"')).replace(
                 "%", "$"
             )
         )
