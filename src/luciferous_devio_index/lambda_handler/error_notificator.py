@@ -108,7 +108,7 @@ def create_message(*, log: LogData, region: str) -> str:
         f"LogGroup: `{log.log_group}`",
         f"LogStream: `{log.log_stream}`",
         f"timestamp: `{log.timestamp}`",
-        f"datetime: `{datetime.fromtimestamp(log.timestamp, jst)}`",
+        f"datetime: `{datetime.fromtimestamp(log.timestamp / 1000, jst)}`",
     ]
 
     request_id = None
