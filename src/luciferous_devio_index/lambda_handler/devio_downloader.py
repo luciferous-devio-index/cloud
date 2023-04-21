@@ -32,7 +32,7 @@ def handler(event: dict, context, s3_client: S3Client = create_client("s3")):
         post_data = http_client_sec3(url=f"{env.url_devio_posts}/{post_id}")
     except HTTPError as e:
         if e.status in [404, 401]:
-            logger.error(
+            logger.warning(
                 f"failed to get post data: post_id={post_id} status={e.status}, err={e}"
             )
             return
