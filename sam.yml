@@ -102,13 +102,12 @@ Resources:
           Properties:
             BatchSize: 1
             Enabled: true
-            MaximumBatchingWindowInSeconds: 180
             Queue: !GetAtt QueueGetPost.Arn
       Handler: luciferous_devio_index/lambda_handler/devio_downloader.handler
       Policies:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
-      ReservedConcurrentExecutions: 3
+      ReservedConcurrentExecutions: 10
 
   LogStackDevioDownloader:
     Type: AWS::CloudFormation::Stack
