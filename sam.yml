@@ -132,7 +132,7 @@ Resources:
           Type: Schedule
           Properties:
             Enabled: true
-            Schedule: rate(15 minutes)
+            Schedule: rate(5 minutes)
       Handler: luciferous_devio_index/lambda_handler/feed_dispatcher.handler
       Policies:
         - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
