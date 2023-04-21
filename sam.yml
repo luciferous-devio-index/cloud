@@ -107,7 +107,7 @@ Resources:
       Policies:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
-      ReservedConcurrentExecutions: 10
+      ReservedConcurrentExecutions: 20
 
   LogStackDevioDownloader:
     Type: AWS::CloudFormation::Stack
