@@ -9,6 +9,10 @@ Parameters:
     Type: AWS::SSM::Parameter::Value<String>
     Default: /LuciferousDevIoIndex/Layer/Feedparser
 
+  LayerArnBs4:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /LuciferousDevIoIndex/Layer/Bs4
+
 Globals:
   Function:
     Runtime: python3.9
@@ -193,3 +197,34 @@ Resources:
       Statistic: Sum
       Threshold: 0.0
       TreatMissingData: notBreaching
+
+  FunctionSitemapDownloader:
+    Type: AWS::Serverless::Function
+    Properties:
+      Architectures:
+        - arm64
+      AutoPublishAlias: prd
+      Environment:
+        Variables:
+          S3_BUCKET: !Ref BucketDevioData
+          S3_PREFIX: sitemap
+          URL_DEVIO_POSTS: https://dev.classmethod.jp/sitemap.xml
+      Handler: luciferous_devio_index/lambda_handler/sitemap_downloader.handler
+      Events:
+        Schedule:
+          Type: Schedule
+          Properties:
+            Enabled: true
+            Schedule: rate(1 day)
+      Policies:
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+      Layers:
+        - !Ref LayerArnBs4
+
+  LogStackSitemapDownloader:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: log.yml
+      Parameters:
+        FunctionName: !Ref FunctionSitemapDownloader
+        FunctionArnErrorNotificator: !GetAtt FunctionErrorNotificator.Arn

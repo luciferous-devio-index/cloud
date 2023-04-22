@@ -29,7 +29,8 @@ def handler(event: dict, context, s3_client: S3Client = create_client("s3")):
     env = load_environment(class_dataclass=EnvironmentVariables)
     post_id = parse_post_id(event=event)
     try:
-        post_data = http_client_sec3(url=f"{env.url_devio_posts}/{post_id}")
+        response = http_client_sec3(url=f"{env.url_devio_posts}/{post_id}")
+        post_data = response.read()
     except HTTPError as e:
         if e.status in [404, 401]:
             logger.warning(

@@ -1,6 +1,7 @@
 from datetime import datetime
+from http.client import HTTPResponse
 from time import sleep
-from typing import AnyStr, Callable, Optional
+from typing import Callable, Optional
 from urllib.request import urlopen
 
 from luciferous_devio_index.common.logger import MyLogger
@@ -8,11 +9,11 @@ from luciferous_devio_index.common.logger import MyLogger
 logger = MyLogger(__name__)
 
 
-def create_http_client(sec: int) -> Callable[[str], AnyStr]:
+def create_http_client(sec: int) -> Callable[[str], HTTPResponse]:
     dt_prev: Optional[datetime] = None
 
     @logger.logging_function()
-    def process(url: str) -> AnyStr:
+    def process(url: str) -> HTTPResponse:
         nonlocal dt_prev
         if dt_prev is not None:
             delta = datetime.now() - dt_prev
@@ -22,6 +23,6 @@ def create_http_client(sec: int) -> Callable[[str], AnyStr]:
 
         resp = urlopen(url)
         dt_prev = datetime.now()
-        return resp.read()
+        return resp
 
     return process
