@@ -81,9 +81,6 @@ Resources:
       SourceParameters:
         DynamoDBStreamParameters:
           StartingPosition: TRIM_HORIZON
-        FilterCriteria:
-          Filters:
-            - Pattern: "{\"eventName\": [\"INSERT\"]}"
       Target: !GetAtt QueueGetPost.Arn
 
   BucketDevioData:
