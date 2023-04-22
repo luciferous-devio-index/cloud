@@ -204,6 +204,7 @@ Resources:
       Architectures:
         - arm64
       AutoPublishAlias: prd
+      Timeout: 600
       Environment:
         Variables:
           S3_BUCKET: !Ref BucketDevioData
