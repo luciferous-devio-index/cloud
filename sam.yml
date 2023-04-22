@@ -208,7 +208,7 @@ Resources:
         Variables:
           S3_BUCKET: !Ref BucketDevioData
           S3_PREFIX: sitemap
-          URL_DEVIO_POSTS: https://dev.classmethod.jp/sitemap.xml
+          SITEMAP_URL: https://dev.classmethod.jp/sitemap.xml
       Handler: luciferous_devio_index/lambda_handler/sitemap_downloader.handler
       Events:
         Schedule:
