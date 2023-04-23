@@ -255,7 +255,7 @@ Resources:
                 Action:
                   - kms:Decrypt
                 Resource: "*"
-        - PolicyName: s3 put
+        - PolicyName: s3-put
           PolicyDocument:
             Version: 2012-10-17
             Statement:
