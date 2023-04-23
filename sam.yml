@@ -86,6 +86,9 @@ Resources:
   BucketDevioData:
     Type: AWS::S3::Bucket
 
+  BucketSitemapData:
+    Type: AWS::S3::Bucket
+
   FunctionDevioDownloader:
     Type: AWS::Serverless::Function
     Properties:
@@ -204,7 +207,7 @@ Resources:
       Timeout: 600
       Environment:
         Variables:
-          S3_BUCKET: !Ref BucketDevioData
+          S3_BUCKET: !Ref BucketSitemapData
           S3_PREFIX: sitemap
           SITEMAP_URL: https://dev.classmethod.jp/sitemap.xml
       Handler: luciferous_devio_index/lambda_handler/sitemap_downloader.handler
