@@ -369,3 +369,6 @@ Resources:
 Outputs:
   DomainName:
     Value: !GetAtt Distribution.DomainName
+
+  BucketNameDevioData:
+    Value: !Ref BucketDevioData
