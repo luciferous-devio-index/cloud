@@ -76,15 +76,16 @@ def create_url_cw_logs(
         quote_plus("?").replace("%", "$"),
     ]
     if lambda_request_id is None:
-        part.append(
-            quote_plus(quote_plus(f"start={timestamp}")).replace("%", "$"),
-        )
+        part += [
+            quote_plus(f"start={timestamp}").replace("%", "$"),
+        ]
     else:
-        part.append(
-            quote_plus(quote_plus(f'FilterPattern="{lambda_request_id}"')).replace(
+        part +=[
+            quote_plus("filterPattern=").replace("%", "$"),
+            quote_plus(quote_plus(f'"{lambda_request_id}"')).replace(
                 "%", "$"
             )
-        )
+        ]
     return "".join(part)
 
 
