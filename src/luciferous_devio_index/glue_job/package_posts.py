@@ -3,6 +3,7 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from shutil import make_archive
+from os.path import basename
 
 from luciferous_devio_index.common.logger import MyLogger
 
@@ -57,7 +58,8 @@ def download_posts(*, bucket: str, prefix: str):
 def create_archive(prefix: str):
     now = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S-%Z")
     name = f"devio-posts-{now}"
-    return make_archive(name, format="zip", root_dir=".", base_dir=prefix)
+    file_name = make_archive(name, format="zip", root_dir=".", base_dir=prefix)
+    return basename(file_name)
 
 
 @logger.logging_function()
