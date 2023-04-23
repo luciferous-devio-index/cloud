@@ -39,6 +39,8 @@ check: pyright test-unit
 
 package:
 	uuidgen > src/uuid.txt
+	poetry build --no-cache
+	aws s3 cp dist/luciferous_devio_index-0.1.0-py3-none-any.whl s3://${SAM_ARTIFACT_BUCKET}/whl_cloud/
 	sam package \
 		--s3-bucket ${SAM_ARTIFACT_BUCKET} \
 		--s3-prefix cloud \
@@ -51,7 +53,9 @@ deploy:
 		--template-file template.yml \
 		--capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
 		--role-arn ${ROLE_ARN_CLOUDFORMATION_DEPLOY} \
-		--no-fail-on-empty-changeset
+		--no-fail-on-empty-changeset \
+		--parameter-overrides \
+			BucketArtifacts=${SAM_ARTIFACT_BUCKET}
 
 dry-deploy:
 	sam deploy \

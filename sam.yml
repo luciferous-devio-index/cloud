@@ -13,6 +13,9 @@ Parameters:
     Type: AWS::SSM::Parameter::Value<String>
     Default: /LuciferousDevIoIndex/Layer/Bs4
 
+  BucketArtifacts:
+    Type: String
+
 Globals:
   Function:
     Runtime: python3.9
@@ -226,3 +229,53 @@ Resources:
       Parameters:
         FunctionName: !Ref FunctionSitemapDownloader
         FunctionArnErrorNotificator: !GetAtt FunctionErrorNotificator.Arn
+
+  RoleGlueJob:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: glue.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess
+        - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+      Policies:
+        - PolicyName: decrypt
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - kms:Decrypt
+                Resource: "*"
+        - PolicyName: s3 put
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                Resource: "*"
+
+  JobPackagePosts:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: pythonshell
+        PythonVersion: "3.9"
+        ScriptLocation: src/luciferous_devio_index/glue_job/package_posts.py
+      DefaultArguments:
+        --s3-bucket: !Ref BucketDevioData
+        --s3-posts-prefix: posts
+        --s3-archives-prefix: archives
+        library-set: none
+        --extra-py-files: !Sub s3://${BucketArtifacts}/whl_cloud/luciferous_devio_index-0.1.0-py3-none-any.whl
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      GlueVersion: "3"
+      MaxCapacity: 0.0625
+      Role: !GetAtt RoleGlueJob.Arn
