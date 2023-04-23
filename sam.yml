@@ -279,6 +279,7 @@ Resources:
         library-set: none
         --extra-py-files: !Sub s3://${BucketArtifacts}/whl_cloud/luciferous_devio_index-0.1.0-py3-none-any.whl
         --enable-continuous-cloudwatch-log: 'true'
+        --continuous-log-logGroup: '/glue-job/package-posts'
       ExecutionProperty:
         MaxConcurrentRuns: 1
       GlueVersion: "3.0"

@@ -2,7 +2,6 @@ import json
 import logging
 import logging.config
 import os
-import statistics
 import sys
 from datetime import datetime
 from functools import wraps
@@ -15,7 +14,6 @@ import botocore
 from .function_stats_borg import FunctionDurationStatsBorg
 from .json_log_formatter import (
     LAMBDA_REQUEST_ID_ENVIRONMENT_VALUE_NAME,
-    JsonLogFormatter,
 )
 
 ENVIRONMENT_VARIABLES_NOT_LOGGING = [
@@ -31,6 +29,9 @@ ENVIRONMENT_VARIABLES_NOT_LOGGING = [
     "_AWS_XRAY_DAEMON_PORT",
     "AWS_XRAY_DAEMON_ADDRESS",
 ]
+
+sys.stdout.reconfigure(line_buffering=True)
+sys.stderr.reconfigure(line_buffering=True)
 
 
 class LambdaContextDummy(object):
