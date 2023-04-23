@@ -98,6 +98,33 @@ Resources:
         SigningBehavior: always
         OriginAccessControlOriginType: s3
 
+  CloudFrontFunctionIndex:
+    Type: AWS::CloudFront::Function
+    Properties:
+      FunctionConfig:
+        Comment: ''
+        Runtime: cloudfront-js-1.0
+      AutoPublish: true
+      Name: !Sub
+        - index-get-${UniqueId}
+        - UniqueId: !Select [0, !Split ['-', !Select [2, !Split [/, !Ref 'AWS::StackId']]]]
+      FunctionCode: |
+        function handler(event) {
+          var request = event.request;
+          var uri = request.uri;
+
+          // Check whether the URI is missing a file name.
+          if (uri.endsWith('/')) {
+          request.uri += 'index.html';
+        }
+          // Check whether the URI is missing a file extension.
+          else if (!uri.includes('.')) {
+          request.uri += '/index.html';
+        }
+
+          return request;
+      }
+
   Distribution:
     Type: AWS::CloudFront::Distribution
     Properties:
@@ -120,6 +147,9 @@ Resources:
             - GET
           Compress: true
           CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+          FunctionAssociations:
+            - EventType: viewer-request
+              FunctionARN: !GetAtt CloudFrontFunctionIndex.FunctionARN
         PriceClass: PriceClass_All
         Enabled: true
         HttpVersion: http2and3
