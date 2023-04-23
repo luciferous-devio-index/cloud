@@ -136,11 +136,10 @@ Resources:
             Principal:
               Service: cloudfront.amazonaws.com
             Action: s3:GetObject
-            Resource: !Sub ${BucketDevioData}/*
+            Resource: !Sub ${BucketDevioData.Arn}/*
             Condition:
               StringEquals:
-                AWS:SourceArn: !Sub arn:aws:cloudfront::${AWS::AccountId}::distribution/${Distribution}
-
+                AWS:SourceArn: !Sub arn:aws:cloudfront::${AWS::AccountId}:distribution/${Distribution}
 
   BucketSitemapData:
     Type: AWS::S3::Bucket
