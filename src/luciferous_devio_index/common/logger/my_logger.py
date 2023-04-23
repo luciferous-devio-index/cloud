@@ -181,3 +181,24 @@ class MyLogger(object):
             return process
 
         return wrapper
+
+    def logging_main(self) -> Callable:
+        def wrapper(handler):
+            @wraps(handler)
+            def process(*args, **kwargs):
+                try:
+                    self.debug("argv", argv=sys.argv)
+                except Exception as e:
+                    self.warning(f"Exception occurred in logging argv: [{type(e)}] {e}")
+
+                try:
+                    handler(*args, **kwargs)
+                except Exception as e:
+                    self.error(f"Exception occurred in main: [{type(e)}] {e}")
+                    raise
+                finally:
+                    self.debug("function stats", stats=self.measure.get_stats())
+
+            return process
+
+        return wrapper
