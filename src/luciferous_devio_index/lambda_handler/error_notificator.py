@@ -81,7 +81,7 @@ def create_url_cw_logs(
         )
     else:
         part.append(
-            quote_plus(quote_plus(f'filterPattern="{lambda_request_id}"')).replace(
+            quote_plus(quote_plus(f'FilterPattern="{lambda_request_id}"')).replace(
                 "%", "$"
             )
         )
