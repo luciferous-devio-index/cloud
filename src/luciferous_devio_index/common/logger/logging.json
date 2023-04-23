@@ -48,8 +48,7 @@
     "consoleHandler": {
       "class": "logging.StreamHandler",
       "level": "DEBUG",
-      "formatter": "logFormatter",
-      "stream": "ext://sys.stdout"
+      "formatter": "logFormatter"
     }
   },
   "root": {
