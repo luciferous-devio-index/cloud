@@ -50,7 +50,7 @@ def parse_args() -> Arguments:
 @logger.logging_function()
 def download_posts(*, bucket: str, prefix: str):
     subprocess.run(
-        f"aws s3 cp --recursive s3://{bucket}/{prefix}/ {prefix}", shell=True
+        f"aws s3 cp --recursive --quiet s3://{bucket}/{prefix}/ {prefix}", shell=True
     )
 
 
@@ -65,7 +65,7 @@ def create_archive(prefix: str):
 @logger.logging_function()
 def put_s3(file_name: str, bucket: str, prefix: str):
     subprocess.run(
-        f"aws s3 cp {file_name} s3://{bucket}/{prefix}/{file_name}", shell=True
+        f"aws s3 cp --quiet {file_name} s3://{bucket}/{prefix}/{file_name}", shell=True
     )
 
 
