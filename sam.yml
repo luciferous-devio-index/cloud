@@ -89,6 +89,59 @@ Resources:
   BucketDevioData:
     Type: AWS::S3::Bucket
 
+  OriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Ref BucketDevioData
+        SigningProtocol: sigv4
+        SigningBehavior: always
+        OriginAccessControlOriginType: s3
+
+  Distribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        DefaultRootObject: index.html
+        Origins:
+          - Id: !GetAtt BucketDevioData.RegionalDomainName
+            OriginAccessControlId: !GetAtt OriginAccessControl.Id
+            DomainName: !GetAtt BucketDevioData.RegionalDomainName
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+        DefaultCacheBehavior:
+          TargetOriginId: !GetAtt BucketDevioData.RegionalDomainName
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - HEAD
+            - GET
+          CachedMethods:
+            - HEAD
+            - GET
+          Compress: true
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+        PriceClass: PriceClass_All
+        Enabled: true
+        HttpVersion: http2and3
+        IPV6Enabled: true
+
+  PolicyBucketDevioData:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref BucketDevioData
+      PolicyDocument:
+        Version: 2008-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub ${BucketDevioData}/*
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub arn:aws:cloudfront::${AWS::AccountId}::distribution/${Distribution}
+
+
   BucketSitemapData:
     Type: AWS::S3::Bucket
 
