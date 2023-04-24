@@ -72,7 +72,8 @@ Resources:
           - Effect: Allow
             Principal:
               AWS: "s3.amazonaws.com"
-            Action: sqs:SendMessage
+            Action:
+              - sqs:SendMessage
             Resource: !GetAtt QueueCreatePostsIndex.Arn
             Condition:
               ArnEquals:
@@ -89,7 +90,8 @@ Resources:
           - Effect: Allow
             Principal:
               AWS: "s3.amazonaws.com"
-            Action: sqs:SendMessage
+            Action:
+              - sqs:SendMessage
             Resource: !GetAtt QueueCreateArchivesIndex.Arn
             Condition:
               ArnEquals:
