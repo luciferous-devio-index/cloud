@@ -61,6 +61,24 @@ Resources:
     Properties:
       VisibilityTimeout: 600
 
+  QueuePolicyBucketDevioData:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref QueueCreatePostsIndex
+        - !Ref QueueCreateArchivesIndex
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: "s3.amazonaws.com"
+            Action: sqs:SendMessage
+            Resource: "*"
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !GetAtt BucketDevioData.Arn
+
   RoleDynamoDbToSqs:
     Type: AWS::IAM::Role
     Properties:
