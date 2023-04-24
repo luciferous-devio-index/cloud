@@ -512,6 +512,37 @@ Resources:
       MaxCapacity: 0.0625
       Role: !GetAtt RoleGlueJob.Arn
 
+  FunctionCallPackage:
+    Type: AWS::Serverless::Function
+    Properties:
+      Architectures:
+        - arm64
+      AutoPublishAlias: prd
+      Environment:
+        Variables:
+          TARGET_JOB_NAME: !Ref JobPackagePosts
+      Handler: luciferous_devio_index/lambda_handler/call_package.handler
+      Events:
+        Schedule:
+          Type: Schedule
+          Properties:
+            Enabled: true
+            Schedule: rate(1 day)
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action: glue:StartJobRun
+              Resource: "*"
+
+  LogStackCallPackage:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: log.yml
+      Parameters:
+        FunctionName: !Ref FunctionCallPackage
+        FunctionArnErrorNotificator: !GetAtt FunctionErrorNotificator.Arn
+
 Outputs:
   DomainName:
     Value: !GetAtt Distribution.DomainName
