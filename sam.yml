@@ -61,11 +61,27 @@ Resources:
     Properties:
       VisibilityTimeout: 600
 
-  QueuePolicyBucketDevioData:
+  QueuePolicyCreatePostsIndexBucketDevioData:
     Type: AWS::SQS::QueuePolicy
     Properties:
       Queues:
         - !Ref QueueCreatePostsIndex
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: "s3.amazonaws.com"
+            Action: sqs:SendMessage
+            Resource: !GetAtt QueueCreatePostsIndex.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !GetAtt BucketDevioData.Arn
+
+  QueuePolicyCreateArchivesIndexBucketDevioData:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
         - !Ref QueueCreateArchivesIndex
       PolicyDocument:
         Version: 2012-10-17
@@ -74,7 +90,7 @@ Resources:
             Principal:
               AWS: "s3.amazonaws.com"
             Action: sqs:SendMessage
-            Resource: "*"
+            Resource: !GetAtt QueueCreateArchivesIndex.Arn
             Condition:
               ArnEquals:
                 aws:SourceArn: !GetAtt BucketDevioData.Arn
