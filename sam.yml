@@ -358,7 +358,7 @@ Resources:
         Variables:
           S3_BUCKET: !Ref BucketDevioData
           TARGET_DIR: archives
-          TARGET_EXTENSION: .json.zip
+          TARGET_EXTENSION: .zip
           DISTRIBUTION_ID: !Ref Distribution
       Handler: luciferous_devio_index/lambda_handler/crate_subpage_index.handler
       Policies:
