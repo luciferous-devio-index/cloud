@@ -121,6 +121,45 @@ Resources:
 
   BucketDevioData:
     Type: AWS::S3::Bucket
+    Properties:
+      NotificationConfiguration:
+        QueueConfigurations:
+          - Event: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: posts/
+                  - Name: suffix
+                    Value: .json.zip
+            Queue: !GetAtt QueueCreatePostsIndex.Arn
+          - Event: s3:ObjectRemoved:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: posts/
+                  - Name: suffix
+                    Value: .json.zip
+            Queue: !GetAtt QueueCreatePostsIndex.Arn
+          - Event: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: archives/
+                  - Name: suffix
+                    Value: .zip
+            Queue: !GetAtt QueueCreateArchivesIndex.Arn
+          - Event: s3:ObjectRemoved:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: archives/
+                  - Name: suffix
+                    Value: .zip
+            Queue: !GetAtt QueueCreateArchivesIndex.Arn
 
   OriginAccessControl:
     Type: AWS::CloudFront::OriginAccessControl
@@ -362,11 +401,12 @@ Resources:
           TARGET_EXTENSION: .json.zip
           DISTRIBUTION_ID: !Ref Distribution
       Handler: luciferous_devio_index/lambda_handler/create_subpage_index.handler
+      ReservedConcurrentExecutions: 1
       Events:
         SQS:
           Type: SQS
           Properties:
-            BatchSize: 1
+            BatchSize: 10
             Enabled: true
             Queue: !GetAtt QueueCreatePostsIndex.Arn
       Policies:
@@ -398,11 +438,12 @@ Resources:
           TARGET_EXTENSION: .zip
           DISTRIBUTION_ID: !Ref Distribution
       Handler: luciferous_devio_index/lambda_handler/create_subpage_index.handler
+      ReservedConcurrentExecutions: 1
       Events:
         SQS:
           Type: SQS
           Properties:
-            BatchSize: 1
+            BatchSize: 10
             Enabled: true
             Queue: !GetAtt QueueCreateArchivesIndex.Arn
       Policies:
