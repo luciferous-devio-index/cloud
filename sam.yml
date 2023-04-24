@@ -51,6 +51,16 @@ Resources:
     Properties:
       VisibilityTimeout: 180
 
+  QueueCreatePostsIndex:
+    Type: AWS::SQS::Queue
+    Properties:
+      VisibilityTimeout: 600
+
+  QueueCreateArchivesIndex:
+    Type: AWS::SQS::Queue
+    Properties:
+      VisibilityTimeout: 600
+
   RoleDynamoDbToSqs:
     Type: AWS::IAM::Role
     Properties:
@@ -333,7 +343,15 @@ Resources:
           TARGET_EXTENSION: .json.zip
           DISTRIBUTION_ID: !Ref Distribution
       Handler: luciferous_devio_index/lambda_handler/create_subpage_index.handler
+      Events:
+        SQS:
+          Type: SQS
+          Properties:
+            BatchSize: 1
+            Enabled: true
+            Queue: !GetAtt QueueCreatePostsIndex.Arn
       Policies:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
         - arn:aws:iam::aws:policy/CloudFrontFullAccess
       Layers:
@@ -361,7 +379,15 @@ Resources:
           TARGET_EXTENSION: .zip
           DISTRIBUTION_ID: !Ref Distribution
       Handler: luciferous_devio_index/lambda_handler/create_subpage_index.handler
+      Events:
+        SQS:
+          Type: SQS
+          Properties:
+            BatchSize: 1
+            Enabled: true
+            Queue: !GetAtt QueueCreateArchivesIndex.Arn
       Policies:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
         - arn:aws:iam::aws:policy/CloudFrontFullAccess
       Layers:
