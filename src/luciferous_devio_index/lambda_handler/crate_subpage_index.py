@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 from os.path import basename
 from typing import List
+from uuid import uuid4
 
 from jinja2 import Template
+from mypy_boto3_cloudfront import CloudFrontClient
 from mypy_boto3_s3 import S3Client
 
 from luciferous_devio_index.common.aws import create_client
@@ -16,6 +18,7 @@ class EnvironmentVariables:
     s3_bucket: str
     target_dir: str
     target_extension: str
+    distribution_id: str
 
 
 @dataclass()
@@ -33,12 +36,22 @@ logger = MyLogger(__name__)
 
 
 @logger.logging_handler()
-def handler(event, context, s3_client: S3Client = create_client("s3")):
+def handler(
+    event,
+    context,
+    s3_client: S3Client = create_client("s3"),
+    cloudfront_client: CloudFrontClient = create_client("cloudfront"),
+):
     env = load_environment(class_dataclass=EnvironmentVariables)
     contents = get_contents(env=env, s3_client=s3_client)
     contents = sort_contents(target_dir=env.target_dir, contents=contents)
     text = create_index_text(target_dir=env.target_dir, contents=contents)
     upload_index(env=env, text=text, s3_client=s3_client)
+    create_invalidation(
+        distribution_id=env.distribution_id,
+        target_dir=env.target_dir,
+        cloudfront_client=cloudfront_client,
+    )
 
 
 @logger.logging_function(with_return=False)
@@ -66,7 +79,7 @@ def sort_contents(*, target_dir: str, contents: List[Content]) -> List[Content]:
     elif target_dir == "archives":
         return sorted(contents, reverse=True)
     else:
-        raise ValueError('invalid target dir')
+        raise ValueError("invalid target dir")
 
 
 @logger.logging_function(with_arg=False)
@@ -82,4 +95,17 @@ def upload_index(*, env: EnvironmentVariables, text: str, s3_client: S3Client):
         Key=f"{env.target_dir}/index.html",
         ContentType="text/html",
         Body=text.encode(),
+    )
+
+
+@logger.logging_function()
+def create_invalidation(
+    *, distribution_id: str, target_dir: str, cloudfront_client: CloudFrontClient
+):
+    cloudfront_client.create_invalidation(
+        DistributionId=distribution_id,
+        InvalidationBatch={
+            "CallerReference": str(uuid4()),
+            "Paths": {"Quantity": 1, "Items": [f"/{target_dir}/index.html"]},
+        },
     )

@@ -331,6 +331,7 @@ Resources:
           S3_BUCKET: !Ref BucketDevioData
           TARGET_DIR: posts
           TARGET_EXTENSION: .json.zip
+          DISTRIBUTION_ID: !Ref Distribution
       Handler: luciferous_devio_index/lambda_handler/crate_subpage_index.handler
       Policies:
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
@@ -357,6 +358,7 @@ Resources:
           S3_BUCKET: !Ref BucketDevioData
           TARGET_DIR: archives
           TARGET_EXTENSION: .json.zip
+          DISTRIBUTION_ID: !Ref Distribution
       Handler: luciferous_devio_index/lambda_handler/crate_subpage_index.handler
       Policies:
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
