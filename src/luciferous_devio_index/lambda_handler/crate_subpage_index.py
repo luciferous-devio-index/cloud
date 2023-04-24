@@ -36,7 +36,9 @@ logger = MyLogger(__name__)
 def handler(event, context, s3_client: S3Client = create_client("s3")):
     env = load_environment(class_dataclass=EnvironmentVariables)
     contents = get_contents(env=env, s3_client=s3_client)
+    contents = sort_contents(target_dir=env.target_dir, contents=contents)
     text = create_index_text(target_dir=env.target_dir, contents=contents)
+    upload_index(env=env, text=text, s3_client=s3_client)
 
 
 @logger.logging_function(with_return=False)
@@ -54,7 +56,17 @@ def get_contents(*, env: EnvironmentVariables, s3_client: S3Client) -> List[Cont
             for x in resp.get("Contents", [])
             if x["Key"][-len(env.target_extension) :] == env.target_extension
         ]
-    return sorted(result, key=lambda x: x.get_number())
+    return result
+
+
+@logger.logging_function()
+def sort_contents(*, target_dir: str, contents: List[Content]) -> List[Content]:
+    if target_dir == "posts":
+        return sorted(contents, key=lambda x: x.get_number(), reverse=True)
+    elif target_dir == "archives":
+        return sorted(contents, reverse=True)
+    else:
+        raise ValueError('invalid target dir')
 
 
 @logger.logging_function(with_arg=False)
