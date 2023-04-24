@@ -2,8 +2,8 @@ import subprocess
 import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from shutil import make_archive
 from os.path import basename
+from shutil import make_archive
 
 from luciferous_devio_index.common.logger import MyLogger
 

@@ -12,9 +12,7 @@ import boto3
 import botocore
 
 from .function_stats_borg import FunctionDurationStatsBorg
-from .json_log_formatter import (
-    LAMBDA_REQUEST_ID_ENVIRONMENT_VALUE_NAME,
-)
+from .json_log_formatter import LAMBDA_REQUEST_ID_ENVIRONMENT_VALUE_NAME
 
 ENVIRONMENT_VARIABLES_NOT_LOGGING = [
     "AWS_ACCESS_KEY_ID",

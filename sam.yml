@@ -13,6 +13,10 @@ Parameters:
     Type: AWS::SSM::Parameter::Value<String>
     Default: /LuciferousDevIoIndex/Layer/Bs4
 
+  LayerArnJinja:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /LuciferousDevIoIndex/Layer/Jinja
+
   BucketArtifacts:
     Type: String
 
@@ -313,6 +317,58 @@ Resources:
       TemplateURL: log.yml
       Parameters:
         FunctionName: !Ref FunctionSitemapDownloader
+        FunctionArnErrorNotificator: !GetAtt FunctionErrorNotificator.Arn
+
+  FunctionCreatePostsIndex:
+    Type: AWS::Serverless::Function
+    Properties:
+      Architectures:
+        - arm64
+      AutoPublishAlias: prd
+      Timeout: 600
+      Environment:
+        Variables:
+          S3_BUCKET: !Ref BucketDevioData
+          TARGET_DIR: posts
+          TARGET_EXTENSION: .json.zip
+      Handler: luciferous_devio_index/common/jinja_templates/subpage_index.handler
+      Policies:
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+      Layers:
+        - !Ref /LuciferousDevIoIndex/Layer/Jinja
+
+  LogStackCreatePostsIndex:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: log.yml
+      Parameters:
+        FunctionName: !Ref FunctionCreatePostsIndex
+        FunctionArnErrorNotificator: !GetAtt FunctionErrorNotificator.Arn
+
+  FunctionCreateArchivesIndex:
+    Type: AWS::Serverless::Function
+    Properties:
+      Architectures:
+        - arm64
+      AutoPublishAlias: prd
+      Timeout: 600
+      Environment:
+        Variables:
+          S3_BUCKET: !Ref BucketDevioData
+          TARGET_DIR: archives
+          TARGET_EXTENSION: .json.zip
+      Handler: luciferous_devio_index/common/jinja_templates/subpage_index.handler
+      Policies:
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+      Layers:
+        - !Ref /LuciferousDevIoIndex/Layer/Jinja
+
+  LogStackCreateArchivesIndex:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: log.yml
+      Parameters:
+        FunctionName: !Ref FunctionCreateArchivesIndex
         FunctionArnErrorNotificator: !GetAtt FunctionErrorNotificator.Arn
 
   RoleGlueJob:

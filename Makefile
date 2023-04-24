@@ -3,10 +3,10 @@ SHELL = /usr/bin/env bash -xeuo pipefail
 stack_name:=luciferous-devio-index-cloud
 
 isort:
-	poetry run isort src/
+	poetry run isort src/ scripts/
 
 black:
-	poetry run black src/
+	poetry run black src/ scripts/
 
 format: isort black
 
@@ -69,6 +69,9 @@ describe:
 	aws cloudformation describe-stacks \
 		--stack-name $(stack_name) \
 		--query Stacks[0].Outputs
+
+upload-root-index:
+	python scripts/upload_root_index.py $(stack_name)
 
 .PHONY: \
 	install \

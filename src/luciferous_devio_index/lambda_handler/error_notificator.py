@@ -80,11 +80,9 @@ def create_url_cw_logs(
             quote_plus(f"start={timestamp}").replace("%", "$"),
         ]
     else:
-        part +=[
+        part += [
             quote_plus("filterPattern=").replace("%", "$"),
-            quote_plus(quote_plus(f'"{lambda_request_id}"')).replace(
-                "%", "$"
-            )
+            quote_plus(quote_plus(f'"{lambda_request_id}"')).replace("%", "$"),
         ]
     return "".join(part)
 
