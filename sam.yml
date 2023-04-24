@@ -335,7 +335,7 @@ Resources:
       Policies:
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
       Layers:
-        - !Ref /LuciferousDevIoIndex/Layer/Jinja
+        - !Ref LayerArnJinja
 
   LogStackCreatePostsIndex:
     Type: AWS::CloudFormation::Stack
@@ -361,7 +361,7 @@ Resources:
       Policies:
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
       Layers:
-        - !Ref /LuciferousDevIoIndex/Layer/Jinja
+        - !Ref LayerArnJinja
 
   LogStackCreateArchivesIndex:
     Type: AWS::CloudFormation::Stack
