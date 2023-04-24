@@ -335,6 +335,7 @@ Resources:
       Handler: luciferous_devio_index/lambda_handler/crate_subpage_index.handler
       Policies:
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/CloudFrontFullAccess
       Layers:
         - !Ref LayerArnJinja
 
@@ -362,6 +363,7 @@ Resources:
       Handler: luciferous_devio_index/lambda_handler/crate_subpage_index.handler
       Policies:
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/CloudFrontFullAccess
       Layers:
         - !Ref LayerArnJinja
 
