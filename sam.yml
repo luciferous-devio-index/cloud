@@ -332,7 +332,7 @@ Resources:
           TARGET_DIR: posts
           TARGET_EXTENSION: .json.zip
           DISTRIBUTION_ID: !Ref Distribution
-      Handler: luciferous_devio_index/lambda_handler/crate_subpage_index.handler
+      Handler: luciferous_devio_index/lambda_handler/create_subpage_index.handler
       Policies:
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
         - arn:aws:iam::aws:policy/CloudFrontFullAccess
@@ -360,7 +360,7 @@ Resources:
           TARGET_DIR: archives
           TARGET_EXTENSION: .zip
           DISTRIBUTION_ID: !Ref Distribution
-      Handler: luciferous_devio_index/lambda_handler/crate_subpage_index.handler
+      Handler: luciferous_devio_index/lambda_handler/create_subpage_index.handler
       Policies:
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
         - arn:aws:iam::aws:policy/CloudFrontFullAccess

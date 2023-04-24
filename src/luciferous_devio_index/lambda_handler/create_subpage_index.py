@@ -77,7 +77,7 @@ def sort_contents(*, target_dir: str, contents: List[Content]) -> List[Content]:
     if target_dir == "posts":
         return sorted(contents, key=lambda x: x.get_number(), reverse=True)
     elif target_dir == "archives":
-        return sorted(contents, reverse=True)
+        return sorted(contents, key=lambda x: x.name, reverse=True)
     else:
         raise ValueError("invalid target dir")
 
