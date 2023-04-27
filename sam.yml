@@ -46,6 +46,17 @@ Resources:
       StreamSpecification:
         StreamViewType: KEYS_ONLY
 
+  TableSlugs:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: slug
+          AttributeType: S
+      KeySchema:
+        - AttributeName: slug
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+
   QueueGetPost:
     Type: AWS::SQS::Queue
     Properties:
@@ -61,12 +72,18 @@ Resources:
     Properties:
       VisibilityTimeout: 600
 
+  QueueSlugMapping:
+    Type: AWS::SQS::Queue
+    Properties:
+      VisibilityTimeout: 180
+
   QueuePolicyBucketDevioData:
     Type: AWS::SQS::QueuePolicy
     Properties:
       Queues:
         - !Ref QueueCreateArchivesIndex
         - !Ref QueueCreatePostsIndex
+        - !Ref QueueSlugMapping
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -133,6 +150,15 @@ Resources:
                   - Name: suffix
                     Value: .json.zip
             Queue: !GetAtt QueueCreatePostsIndex.Arn
+          - Event: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: posts/
+                  - Name: suffix
+                    Value: .json.zip
+            Queue: !GetAtt QueueSlugMapping.Arn
           - Event: s3:ObjectRemoved:*
             Filter:
               S3Key:
@@ -542,6 +568,43 @@ Resources:
       Parameters:
         FunctionName: !Ref FunctionCallPackage
         FunctionArnErrorNotificator: !GetAtt FunctionErrorNotificator.Arn
+
+  FunctionMapSlug:
+    Type: AWS::Serverless::Function
+    Properties:
+      Architectures:
+        - arm64
+      AutoPublishAlias: prd
+      Environment:
+        Variables:
+          TARGET_JOB_NAME: !Ref JobPackagePosts
+          dynamodb_table: !Ref TableSlugs
+      Handler: luciferous_devio_index/lambda_handler/map_slug.handler
+      Events:
+        SQS:
+          Type: SQS
+          Properties:
+            BatchSize: 1
+            Enabled: true
+            Queue: !GetAtt QueueSlugMapping.Arn
+      ReservedConcurrentExecutions: 10
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action: dynamodb:PutItem
+              Resource: !GetAtt TableSlugs.Arn
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole
+        - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+
+  LogStackMapSlug:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: log.yml
+      Parameters:
+        FunctionName: !Ref FunctionCallPackage
+        FunctionArnErrorNotificator: !GetAtt FunctionErrorNotificator.Arn
+
 
 Outputs:
   DomainName:
