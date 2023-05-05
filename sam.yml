@@ -60,6 +60,19 @@ Resources:
           KeyType: HASH
       BillingMode: PAY_PER_REQUEST
 
+  TableSitemap:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: url
+          AttributeType: S
+      KeySchema:
+        - AttributeName: url
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      StreamSpecification:
+        StreamViewType: KEYS_ONLY
+
   QueueGetPost:
     Type: AWS::SQS::Queue
     Properties:
@@ -79,6 +92,11 @@ Resources:
     Type: AWS::SQS::Queue
     Properties:
       VisibilityTimeout: 180
+
+  QueueIndividualSitemap:
+    Type: AWS::SQS::Queue
+    Properties:
+      VisibilityTimeout: 300
 
   SubscriptionSnsSqsPostUploadCreateArchive:
     Type: AWS::SNS::Subscription
@@ -163,11 +181,13 @@ Resources:
                   - dynamodb:ListStreams
                 Resource:
                   - !GetAtt TableListPostId.StreamArn
+                  - !GetAtt TableSitemap.StreamArn
               - Effect: Allow
                 Action:
                   - sqs:SendMessage
                 Resource:
                   - !GetAtt QueueGetPost.Arn
+                  - !GetAtt QueueIndividualSitemap.Arn
 
   PipeDynamoDbToSqs:
     Type: AWS::Pipes::Pipe
@@ -257,6 +277,7 @@ Resources:
 
           return request;
         }
+
 
 
 
@@ -641,7 +662,6 @@ Resources:
       Parameters:
         FunctionName: !Ref FunctionMapSlug
         FunctionArnErrorNotificator: !GetAtt FunctionErrorNotificator.Arn
-
 
 Outputs:
   DomainName:
