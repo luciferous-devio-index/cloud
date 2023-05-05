@@ -1,3 +1,4 @@
+import dataclasses
 import json
 import logging
 import os
@@ -9,7 +10,6 @@ from typing import Type
 from boto3.dynamodb.conditions import AttributeBase, ConditionBase
 
 LAMBDA_REQUEST_ID_ENVIRONMENT_VALUE_NAME = "LAMBDA_REQUEST_ID"
-import dataclasses
 
 
 def default(obj):

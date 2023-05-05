@@ -96,7 +96,7 @@ Resources:
   QueueIndividualSitemap:
     Type: AWS::SQS::Queue
     Properties:
-      VisibilityTimeout: 300
+      VisibilityTimeout: 180
 
   SubscriptionSnsSqsPostUploadCreateArchive:
     Type: AWS::SNS::Subscription
@@ -671,6 +671,35 @@ Resources:
       TemplateURL: log.yml
       Parameters:
         FunctionName: !Ref FunctionMapSlug
+        FunctionArnErrorNotificator: !GetAtt FunctionErrorNotificator.Arn
+
+  FunctionCheckRootSitemap:
+    Type: AWS::Serverless::Function
+    Properties:
+      Architectures:
+        - arm64
+      AutoPublishAlias: prd
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME: !Ref TableIndividualSitemap
+          SITEMAP_URL: https://dev.classmethod.jp/sitemap.xml
+          TARGET_PREFIX: sitemap-pt-post
+      Handler: luciferous_devio_index/lambda_handler/check_root_sitemap.handler
+      Layers:
+        - !Ref LayerArnBs4
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action: dynamodb:PutItem
+              Resource: !GetAtt TableIndividualSitemap.Arn
+
+  LogStackCheckRootSitemap:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: log.yml
+      Parameters:
+        FunctionName: !Ref FunctionCheckRootSitemap
         FunctionArnErrorNotificator: !GetAtt FunctionErrorNotificator.Arn
 
 Outputs:
