@@ -639,7 +639,7 @@ Resources:
     Properties:
       TemplateURL: log.yml
       Parameters:
-        FunctionName: !Ref FunctionCallPackage
+        FunctionName: !Ref FunctionMapSlug
         FunctionArnErrorNotificator: !GetAtt FunctionErrorNotificator.Arn
 
 
