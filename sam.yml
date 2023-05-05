@@ -33,6 +33,9 @@ Resources:
   TopicAlarm:
     Type: AWS::SNS::Topic
 
+  TopicS3NotificationPostsUpload:
+    Type: AWS::SNS::Topic
+
   TableListPostId:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -77,6 +80,37 @@ Resources:
     Properties:
       VisibilityTimeout: 180
 
+  SubscriptionSnsSqsPostUploadCreateArchive:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref TopicS3NotificationPostsUpload
+      Protocol: sqs
+      Endpoint: !GetAtt QueueCreateArchivesIndex.Arn
+
+  SubscriptionSnsSqsPostUploadMappingSlug:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref TopicS3NotificationPostsUpload
+      Protocol: sqs
+      Endpoint: !GetAtt QueueSlugMapping.Arn
+
+  TopicPolicyS3NotificationPostsUpload:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref TopicS3NotificationPostsUpload
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: s3.amazonaws.com
+            Action: sns:Publish
+            Resource: "*"
+            Condition:
+              ArnLike:
+                aws:SourceArn: !GetAtt BucketDevioData.Arn
+
   QueuePolicyBucketDevioData:
     Type: AWS::SQS::QueuePolicy
     Properties:
@@ -96,6 +130,15 @@ Resources:
             Condition:
               ArnEquals:
                 aws:SourceArn: !GetAtt BucketDevioData.Arn
+          - Effect: Allow
+            Principal:
+              Service: "sns.amazonaws.com"
+            Action:
+              - sqs:SendMessage
+            Resource: "*"
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Ref TopicS3NotificationPostsUpload
 
   RoleDynamoDbToSqs:
     Type: AWS::IAM::Role
@@ -140,25 +183,17 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       NotificationConfiguration:
+        TopicConfigurations:
+          - Event: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: posts/
+                  - Name: suffix
+                    Value: .json.zip
+            Topic: !Ref TopicS3NotificationPostsUpload
         QueueConfigurations:
-          - Event: s3:ObjectCreated:*
-            Filter:
-              S3Key:
-                Rules:
-                  - Name: prefix
-                    Value: posts/
-                  - Name: suffix
-                    Value: .json.zip
-            Queue: !GetAtt QueueCreatePostsIndex.Arn
-          - Event: s3:ObjectCreated:*
-            Filter:
-              S3Key:
-                Rules:
-                  - Name: prefix
-                    Value: posts/
-                  - Name: suffix
-                    Value: .json.zip
-            Queue: !GetAtt QueueSlugMapping.Arn
           - Event: s3:ObjectRemoved:*
             Filter:
               S3Key:
@@ -222,6 +257,8 @@ Resources:
 
           return request;
         }
+
+
 
   Distribution:
     Type: AWS::CloudFront::Distribution
