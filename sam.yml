@@ -615,7 +615,7 @@ Resources:
       Environment:
         Variables:
           TARGET_JOB_NAME: !Ref JobPackagePosts
-          dynamodb_table: !Ref TableSlugs
+          DYNAMODB_TABLE: !Ref TableSlugs
       Handler: luciferous_devio_index/lambda_handler/map_slug.handler
       Events:
         SQS:
