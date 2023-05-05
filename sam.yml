@@ -183,16 +183,16 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       NotificationConfiguration:
-#        TopicConfigurations:
-#          - Event: s3:ObjectCreated:*
-#            Filter:
-#              S3Key:
-#                Rules:
-#                  - Name: prefix
-#                    Value: posts/
-#                  - Name: suffix
-#                    Value: .json.zip
-#            Topic: !Ref TopicS3NotificationPostsUpload
+        TopicConfigurations:
+          - Event: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: posts/
+                  - Name: suffix
+                    Value: .json.zip
+            Topic: !Ref TopicS3NotificationPostsUpload
         QueueConfigurations:
           - Event: s3:ObjectRemoved:*
             Filter:
