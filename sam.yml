@@ -467,7 +467,7 @@ Resources:
           Type: Schedule
           Properties:
             Enabled: true
-            Schedule: rate(1 day)
+            Schedule: rate(1 hour)
       Policies:
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
       Layers:
