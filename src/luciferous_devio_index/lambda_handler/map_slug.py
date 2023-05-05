@@ -2,6 +2,7 @@ import json
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from io import BytesIO
+from os.path import basename
 from zipfile import ZipFile
 
 from mypy_boto3_dynamodb import DynamoDBServiceResource
@@ -67,7 +68,7 @@ def get_post_data(*, obj: S3Object, s3_client: S3Client) -> PostData:
     resp = s3_client.get_object(Bucket=obj.bucket, Key=obj.key)
     io = BytesIO(resp["Body"].read())
     with ZipFile(io) as zf:
-        with zf.open(obj.key.replace(".zip", "")) as f:
+        with zf.open(basename(obj.key.replace(".zip", ""))) as f:
             data = json.load(f)
     lastmod = data["modified_gmt"]
     return PostData(
