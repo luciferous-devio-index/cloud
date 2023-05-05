@@ -54,6 +54,8 @@ def handler(
 def parse_event(*, event: dict) -> S3Object:
     body = event["Records"][0]["body"]
     data = json.loads(body)
+    message = data["Message"]
+    data = json.loads(message)
     return S3Object(
         bucket=data["Records"][0]["s3"]["bucket"]["name"],
         key=data["Records"][0]["s3"]["object"]["key"],
