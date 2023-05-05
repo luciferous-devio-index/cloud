@@ -60,7 +60,7 @@ Resources:
           KeyType: HASH
       BillingMode: PAY_PER_REQUEST
 
-  TableSitemap:
+  TableIndividualSitemap:
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
@@ -181,7 +181,7 @@ Resources:
                   - dynamodb:ListStreams
                 Resource:
                   - !GetAtt TableListPostId.StreamArn
-                  - !GetAtt TableSitemap.StreamArn
+                  - !GetAtt TableIndividualSitemap.StreamArn
               - Effect: Allow
                 Action:
                   - sqs:SendMessage
@@ -198,6 +198,16 @@ Resources:
         DynamoDBStreamParameters:
           StartingPosition: TRIM_HORIZON
       Target: !GetAtt QueueGetPost.Arn
+
+  PipeIndividualSitemap:
+    Type: AWS::Pipes::Pipe
+    Properties:
+      RoleArn: !GetAtt RoleDynamoDbToSqs.Arn
+      Source: !GetAtt TableIndividualSitemap.StreamArn
+      SourceParameters:
+        DynamoDBStreamParameters:
+          StartingPosition: TRIM_HORIZON
+      Target: !GetAtt QueueIndividualSitemap.Arn
 
   BucketDevioData:
     Type: AWS::S3::Bucket
