@@ -731,6 +731,7 @@ Resources:
             Queue: !GetAtt QueueIndividualSitemap.Arn
       Layers:
         - !Ref LayerArnBs4
+      ReservedConcurrentExecutions: 10
       Policies:
         - arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess
         - arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole
