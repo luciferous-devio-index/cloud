@@ -96,7 +96,7 @@ Resources:
   QueueIndividualSitemap:
     Type: AWS::SQS::Queue
     Properties:
-      VisibilityTimeout: 300
+      VisibilityTimeout: 600
 
   SubscriptionSnsSqsPostUploadCreateArchive:
     Type: AWS::SNS::Subscription
@@ -714,7 +714,8 @@ Resources:
       Architectures:
         - arm64
       AutoPublishAlias: prd
-      Timeout: 300
+      MemorySize: 512
+      Timeout: 600
       Environment:
         Variables:
           DEVIO_POSTS_URL: https://dev.classmethod.jp/wp-json/wp/v2/posts
