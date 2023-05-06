@@ -74,7 +74,7 @@ def get_sitemap(*, url: str) -> AnyStr:
 @logger.logging_function()
 def parse_individual_sitemap(*, text: AnyStr) -> Iterator[SitemapData]:
     def parse_slug(url: str) -> str:
-        for part in sorted(url.split("/"), reverse=True):
+        for part in reversed(url.split("/")):
             if part:
                 return part
 

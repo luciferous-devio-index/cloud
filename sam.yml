@@ -727,7 +727,7 @@ Resources:
           Type: SQS
           Properties:
             BatchSize: 1
-            Enabled: false
+            Enabled: true
             Queue: !GetAtt QueueIndividualSitemap.Arn
       Layers:
         - !Ref LayerArnBs4
