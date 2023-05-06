@@ -715,7 +715,7 @@ Resources:
         - arm64
       AutoPublishAlias: prd
       MemorySize: 512
-      Timeout: 600
+      Timeout: 900
       Environment:
         Variables:
           DEVIO_POSTS_URL: https://dev.classmethod.jp/wp-json/wp/v2/posts
