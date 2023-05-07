@@ -98,6 +98,12 @@ Resources:
     Properties:
       VisibilityTimeout: 600
 
+  QueueFifoGptVectorStoreIndex:
+    Type: AWS::SQS::Queue
+    Properties:
+      VisibilityTimeout: 300
+      FifoQueue: true
+
   SubscriptionSnsSqsPostUploadCreateArchive:
     Type: AWS::SNS::Subscription
     Properties:
