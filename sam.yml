@@ -59,6 +59,8 @@ Resources:
         - AttributeName: slug
           KeyType: HASH
       BillingMode: PAY_PER_REQUEST
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
 
   TableIndividualSitemap:
     Type: AWS::DynamoDB::Table
@@ -188,12 +190,14 @@ Resources:
                 Resource:
                   - !GetAtt TableListPostId.StreamArn
                   - !GetAtt TableIndividualSitemap.StreamArn
+                  - !GetAtt TableSlugs.StreamArn
               - Effect: Allow
                 Action:
                   - sqs:SendMessage
                 Resource:
                   - !GetAtt QueueGetPost.Arn
                   - !GetAtt QueueIndividualSitemap.Arn
+                  - !GetAtt QueueFifoGptVectorStoreIndex.Arn
 
   PipeDynamoDbToSqs:
     Type: AWS::Pipes::Pipe
@@ -214,6 +218,16 @@ Resources:
         DynamoDBStreamParameters:
           StartingPosition: TRIM_HORIZON
       Target: !GetAtt QueueIndividualSitemap.Arn
+
+  PipeGptVectorStoreIndex:
+    Type: AWS::Pipes::Pipe
+    Properties:
+      RoleArn: !GetAtt RoleDynamoDbToSqs.Arn
+      Source: !GetAtt TableSlugs.StreamArn
+      SourceParameters:
+        DynamoDBStreamParameters:
+          StartingPosition: TRIM_HORIZON
+      Target: !GetAtt QueueFifoGptVectorStoreIndex.Arn
 
   BucketDevioData:
     Type: AWS::S3::Bucket
