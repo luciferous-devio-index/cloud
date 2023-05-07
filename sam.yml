@@ -105,6 +105,8 @@ Resources:
     Properties:
       VisibilityTimeout: 300
       FifoQueue: true
+      DeduplicationScope: messageGroup
+      FifoThroughputLimit: perMessageGroupId
 
   SubscriptionSnsSqsPostUploadCreateArchive:
     Type: AWS::SNS::Subscription
@@ -219,15 +221,17 @@ Resources:
           StartingPosition: TRIM_HORIZON
       Target: !GetAtt QueueIndividualSitemap.Arn
 
-  PipeGptVectorStoreIndex:
-    Type: AWS::Pipes::Pipe
-    Properties:
-      RoleArn: !GetAtt RoleDynamoDbToSqs.Arn
-      Source: !GetAtt TableSlugs.StreamArn
-      SourceParameters:
-        DynamoDBStreamParameters:
-          StartingPosition: TRIM_HORIZON
-      Target: !GetAtt QueueFifoGptVectorStoreIndex.Arn
+#  PipeGptVectorStoreIndex:
+#    Type: AWS::Pipes::Pipe
+#    Properties:
+#      RoleArn: !GetAtt RoleDynamoDbToSqs.Arn
+#      Source: !GetAtt TableSlugs.StreamArn
+#      SourceParameters:
+#        DynamoDBStreamParameters:
+#          StartingPosition: TRIM_HORIZON
+#      Target: !GetAtt QueueFifoGptVectorStoreIndex.Arn
+#      TargetParameters:
+#        SqsQueueParameters:
 
   BucketDevioData:
     Type: AWS::S3::Bucket
