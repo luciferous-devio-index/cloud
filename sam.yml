@@ -221,18 +221,18 @@ Resources:
           StartingPosition: TRIM_HORIZON
       Target: !GetAtt QueueIndividualSitemap.Arn
 
-  PipeGptVectorStoreIndex:
-    Type: AWS::Pipes::Pipe
-    Properties:
-      RoleArn: !GetAtt RoleDynamoDbToSqs.Arn
-      Source: !GetAtt TableSlugs.StreamArn
-      SourceParameters:
-        DynamoDBStreamParameters:
-          StartingPosition: TRIM_HORIZON
-      Target: !GetAtt QueueFifoGptVectorStoreIndex.Arn
-      TargetParameters:
-        SqsQueueParameters:
-          MessageGroupId: "test"
+#  PipeGptVectorStoreIndex:
+#    Type: AWS::Pipes::Pipe
+#    Properties:
+#      RoleArn: !GetAtt RoleDynamoDbToSqs.Arn
+#      Source: !GetAtt TableSlugs.StreamArn
+#      SourceParameters:
+#        DynamoDBStreamParameters:
+#          StartingPosition: TRIM_HORIZON
+#      Target: !GetAtt QueueFifoGptVectorStoreIndex.Arn
+#      TargetParameters:
+#        SqsQueueParameters:
+#          MessageGroupId: "test"
 
   BucketDevioData:
     Type: AWS::S3::Bucket
