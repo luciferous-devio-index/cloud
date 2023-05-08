@@ -230,6 +230,9 @@ Resources:
         DynamoDBStreamParameters:
           StartingPosition: TRIM_HORIZON
       Target: !GetAtt QueueFifoGptVectorStoreIndex.Arn
+      TargetParameters:
+        SqsQueueParameters:
+          MessageGroupId: ""
 
   BucketDevioData:
     Type: AWS::S3::Bucket
