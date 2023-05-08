@@ -232,7 +232,7 @@ Resources:
       Target: !GetAtt QueueFifoGptVectorStoreIndex.Arn
       TargetParameters:
         SqsQueueParameters:
-          MessageGroupId: ""
+          MessageGroupId: "test"
 
   BucketDevioData:
     Type: AWS::S3::Bucket
