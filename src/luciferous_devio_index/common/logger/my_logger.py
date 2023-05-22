@@ -70,7 +70,7 @@ class MyLogger(object):
         self.logger.error(msg, *args, exc_info=True, extra={"additional_data": kwargs})
 
     def logging_function(
-        self, with_arg: bool = True, with_return: bool = True, write_log: bool = True
+        self, with_arg: bool = True, with_return: bool = True, write_log: bool = False
     ) -> Callable:
         def wrapper(func):
             @wraps(func)
