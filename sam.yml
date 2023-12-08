@@ -475,38 +475,6 @@ Resources:
       Threshold: 0.0
       TreatMissingData: notBreaching
 
-  FunctionSitemapDownloader:
-    Type: AWS::Serverless::Function
-    Properties:
-      Architectures:
-        - arm64
-      AutoPublishAlias: prd
-      Timeout: 600
-      Environment:
-        Variables:
-          S3_BUCKET: !Ref BucketSitemapData
-          S3_PREFIX: sitemap
-          SITEMAP_URL: https://dev.classmethod.jp/sitemap.xml
-      Handler: luciferous_devio_index/lambda_handler/sitemap_downloader.handler
-      Events:
-        Schedule:
-          Type: Schedule
-          Properties:
-            Enabled: true
-            Schedule: rate(1 hour)
-      Policies:
-        - arn:aws:iam::aws:policy/AmazonS3FullAccess
-      Layers:
-        - !Ref LayerArnBs4
-
-  LogStackSitemapDownloader:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: log.yml
-      Parameters:
-        FunctionName: !Ref FunctionSitemapDownloader
-        FunctionArnErrorNotificator: !GetAtt FunctionErrorNotificator.Arn
-
   FunctionCreatePostsIndex:
     Type: AWS::Serverless::Function
     Properties:
