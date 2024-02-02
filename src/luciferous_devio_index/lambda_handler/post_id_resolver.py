@@ -62,7 +62,8 @@ def get_post_id(*, slug: str, url_post: str) -> int:
 def put_post_id(*, post_id: int, client: DynamoDBClient, table: Table):
     try:
         table.put_item(
-            Item={"post_id": post_id}, ConditionExpression=Attr("post_id").not_exists()
+            Item={"post_id": str(post_id)},
+            ConditionExpression=Attr("post_id").not_exists(),
         )
     except client.exceptions.ConditionalCheckFailedException:
         logger.debug("already exists")
