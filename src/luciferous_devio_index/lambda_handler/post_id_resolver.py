@@ -1,6 +1,9 @@
+import json
 from dataclasses import dataclass
+from typing import List
 
 from luciferous_devio_index.common.dataclasses import load_environment
+from luciferous_devio_index.common.http import http_client_sec3
 from luciferous_devio_index.common.logger import MyLogger
 
 
@@ -18,7 +21,8 @@ def handler(event: dict, _context):
     env = load_environment(class_dataclass=EnvironmentVariables)
     url = parse_url(event=event)
     slug = parse_slug(url=url)
-    logger.info("url and slug", url=url, slug=slug)
+    post_id = get_post_id(slug=slug, url_post=env.url_post)
+    logger.info("url, slug, and post_id", url=url, slug=slug, post_id=post_id)
 
 
 @logger.logging_function()
@@ -35,3 +39,10 @@ def parse_slug(*, url: str) -> str:
         return part[-2]
     else:
         return part[-1]
+
+
+@logger.logging_function()
+def get_post_id(*, slug: str, url_post: str) -> List[int]:
+    resp = http_client_sec3(f"{url_post}?slug={slug}")
+    data = json.load(resp)
+    return [x["id"] for x in data]
