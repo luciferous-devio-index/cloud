@@ -24,6 +24,8 @@ setuptools = "^67.6.1"
 beautifulsoup4 = "4.12.2"
 lxml = "4.9.2"
 jinja2 = "3.1.2"
+# arn:aws:lambda:ap-northeast-1:017000801446:layer:AWSLambdaPowertoolsPythonV2-Arm64:61
+aws-lambda-powertools = {version = "2.33.0", extras = ["all"]}
 
 [build-system]
 requires = ["poetry-core"]

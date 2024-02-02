@@ -22,12 +22,15 @@ Parameters:
 
 Globals:
   Function:
+    Architectures:
+      - arm64
     Runtime: python3.9
     Timeout: 180
     MemorySize: 256
     CodeUri: src
     Layers:
       - !Ref LayerArnBase
+      - arn:aws:lambda:ap-northeast-1:017000801446:layer:AWSLambdaPowertoolsPythonV2-Arm64:61
 
 Resources:
   TopicAlarm:
@@ -108,6 +111,11 @@ Resources:
       DeduplicationScope: messageGroup
       FifoThroughputLimit: perMessageGroupId
       ContentBasedDeduplication: true
+
+  QueueResolvePostId:
+    Type: AWS::SQS::Queue
+    Properties:
+      VisibilityTimeout: 180
 
   SubscriptionSnsSqsPostUploadCreateArchive:
     Type: AWS::SNS::Subscription
@@ -412,7 +420,7 @@ Resources:
         Schedule:
           Type: Schedule
           Properties:
-            Enabled: true
+            Enabled: false
             Schedule: rate(5 minutes)
       Handler: luciferous_devio_index/lambda_handler/feed_dispatcher.handler
       Policies:
@@ -743,6 +751,34 @@ Resources:
       TemplateURL: log.yml
       Parameters:
         FunctionName: !Ref FunctionCheckIndividualSitemap
+        FunctionArnErrorNotificator: !GetAtt FunctionErrorNotificator.Arn
+
+  FunctionResolvePostId:
+    Type: AWS::Serverless::Function
+    Properties:
+      AutoPublishAlias: prd
+      Environment:
+        Variables:
+          URL_POST: https://dev.classmethod.jp/wp-json/wp/v2/posts
+          TABLE_POST_ID: !Ref TableListPostId
+      Events:
+        Queue:
+          Type: SQS
+          Properties:
+            Enabled: true
+            BatchSize: 1
+            Queue: !GetAtt QueueResolvePostId.Arn
+      Handler: luciferous_devio_index/lambda_handler/post_id_resolver.handler
+      Policies:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole
+        - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+
+  LogStackResolvePostId:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: log.yml
+      Parameters:
+        FunctionName: !Ref FunctionResolvePostId
         FunctionArnErrorNotificator: !GetAtt FunctionErrorNotificator.Arn
 
 Outputs:

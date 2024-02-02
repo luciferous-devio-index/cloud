@@ -1,18 +1,17 @@
-import json
-import logging
-import logging.config
 import os
 import sys
 from datetime import datetime
 from functools import wraps
+from logging import DEBUG
 from typing import Callable
 from uuid import uuid4
 
 import boto3
 import botocore
+from aws_lambda_powertools import Logger
 
 from .function_stats_borg import FunctionDurationStatsBorg
-from .json_log_formatter import LAMBDA_REQUEST_ID_ENVIRONMENT_VALUE_NAME
+from .json_log_formatter import LAMBDA_REQUEST_ID_ENVIRONMENT_VALUE_NAME, default
 
 ENVIRONMENT_VARIABLES_NOT_LOGGING = [
     "AWS_ACCESS_KEY_ID",
@@ -43,31 +42,38 @@ class MyLogger(object):
     """
 
     name: str
-    logger: logging.Logger
+    logger: Logger
     measure: FunctionDurationStatsBorg
 
     def __init__(self, name: str):
-        file_path = os.path.join(
-            os.path.dirname(os.path.realpath(__file__)), "logging.json"
-        )
-        logging.config.dictConfig(json.load(open(file_path)))
         self.name = name
-        self.logger = logging.getLogger(name)
+        self.logger = Logger(
+            service=name,
+            level=DEBUG,
+            json_default=default,
+            use_rfc3339=True,
+        )
         self.measure = FunctionDurationStatsBorg()
 
-    def debug(self, msg, *args, **kwargs) -> None:
-        self.logger.debug(msg, *args, exc_info=True, extra={"additional_data": kwargs})
-
-    def info(self, msg, *args, **kwargs) -> None:
-        self.logger.info(msg, *args, extra={"additional_data": kwargs})
-
-    def warning(self, msg, *args, **kwargs) -> None:
-        self.logger.warning(
-            msg, *args, exc_info=True, extra={"additional_data": kwargs}
+    def debug(self, msg, *args, exc_info: bool = False, **kwargs) -> None:
+        self.logger.debug(
+            msg, *args, exc_info=exc_info, extra={"additional_data": kwargs}
         )
 
-    def error(self, msg, *args, **kwargs) -> None:
-        self.logger.error(msg, *args, exc_info=True, extra={"additional_data": kwargs})
+    def info(self, msg, *args, exc_info: bool = False, **kwargs) -> None:
+        self.logger.info(
+            msg, *args, exc_info=exc_info, extra={"additional_data": kwargs}
+        )
+
+    def warning(self, msg, *args, exc_info: bool = False, **kwargs) -> None:
+        self.logger.warning(
+            msg, *args, exc_info=exc_info, extra={"additional_data": kwargs}
+        )
+
+    def error(self, msg, *args, exc_info: bool = True, **kwargs) -> None:
+        self.logger.error(
+            msg, *args, exc_info=exc_info, extra={"additional_data": kwargs}
+        )
 
     def logging_function(
         self, with_arg: bool = True, with_return: bool = True, write_log: bool = False
@@ -134,6 +140,7 @@ class MyLogger(object):
 
         def wrapper(handler):
             @wraps(handler)
+            @self.logger.inject_lambda_context()
             def process(event, context: LambdaContextDummy, *args, **kwargs):
                 try:
                     # LambdaのRequest IDを環境変数に保存する (LogFormatterで使用するため)

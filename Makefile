@@ -3,7 +3,7 @@ SHELL = /usr/bin/env bash -xeuo pipefail
 stack_name:=luciferous-devio-index-cloud
 
 isort:
-	poetry run isort src/ scripts/
+	poetry run isort --profile=black src/ scripts/
 
 black:
 	poetry run black src/ scripts/
