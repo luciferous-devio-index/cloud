@@ -411,7 +411,7 @@ Resources:
       Environment:
         Variables:
           URL_FEED: https://dev.classmethod.jp/feed
-          DDB_TABLE_NAME: !Ref TableListPostId
+          QUEUE_URL: !Ref QueueResolvePostId
       Events:
         Schedule:
           Type: Schedule
@@ -420,7 +420,7 @@ Resources:
             Schedule: rate(5 minutes)
       Handler: luciferous_devio_index/lambda_handler/feed_dispatcher.handler
       Policies:
-        - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+        - arn:aws:iam::aws:policy/AmazonSQSFullAccess
       Layers:
         - !Ref LayerArnFeedparser
 
@@ -747,7 +747,7 @@ Resources:
         Queue:
           Type: SQS
           Properties:
-            Enabled: true
+            Enabled: false
             BatchSize: 1
             Queue: !GetAtt QueueResolvePostId.Arn
       Handler: luciferous_devio_index/lambda_handler/post_id_resolver.handler
