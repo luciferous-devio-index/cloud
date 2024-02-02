@@ -55,7 +55,7 @@ def parse_slug(*, url: str) -> str:
 def get_post_id(*, slug: str, url_post: str) -> int:
     resp = http_client_sec3(f"{url_post}?slug={slug}")
     data = json.load(resp)
-    return [x["id"] for x in data if x["slug"] == slug]
+    return [x["id"] for x in data if x["slug"] == slug][0]
 
 
 @logger.logging_function()
