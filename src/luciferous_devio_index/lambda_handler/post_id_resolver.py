@@ -61,8 +61,10 @@ def get_post_id(*, slug: str, url_post: str) -> int:
 @logger.logging_function()
 def put_post_id(*, post_id: int, client: DynamoDBClient, table: Table):
     try:
+        item = {"post_id": str(post_id)}
+        logger.debug("put item", item=item)
         table.put_item(
-            Item={"post_id": str(post_id)},
+            Item=item,
             ConditionExpression=Attr("post_id").not_exists(),
         )
     except client.exceptions.ConditionalCheckFailedException:

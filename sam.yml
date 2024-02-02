@@ -747,14 +747,14 @@ Resources:
         Queue:
           Type: SQS
           Properties:
-            Enabled: false
+            Enabled: true
             BatchSize: 1
             Queue: !GetAtt QueueResolvePostId.Arn
       Handler: luciferous_devio_index/lambda_handler/post_id_resolver.handler
       Policies:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole
         - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
-      ReservedConcurrentExecutions: 1
+      ReservedConcurrentExecutions: 5
 
   LogStackResolvePostId:
     Type: AWS::CloudFormation::Stack
