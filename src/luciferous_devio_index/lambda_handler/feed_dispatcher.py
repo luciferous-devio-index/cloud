@@ -81,5 +81,5 @@ def send_messages(*, list_url: List[str], queue_url: str, client: SQSClient):
 
         union_succeeded_id |= set([x["Id"] for x in resp["Successful"]])
 
-        for item in resp["Failed"]:
+        for item in resp.get("Failed", []):
             logger.warning("send failed item", item=item)
