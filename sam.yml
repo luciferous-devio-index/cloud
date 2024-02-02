@@ -754,6 +754,7 @@ Resources:
       Policies:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole
         - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+      ReservedConcurrentExecutions: 5
 
   LogStackResolvePostId:
     Type: AWS::CloudFormation::Stack
