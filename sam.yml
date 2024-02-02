@@ -377,8 +377,6 @@ Resources:
   FunctionDevioDownloader:
     Type: AWS::Serverless::Function
     Properties:
-      Architectures:
-        - arm64
       AutoPublishAlias: prd
       Environment:
         Variables:
@@ -409,8 +407,6 @@ Resources:
   FunctionFeedDispatcher:
     Type: AWS::Serverless::Function
     Properties:
-      Architectures:
-        - arm64
       AutoPublishAlias: prd
       Environment:
         Variables:
@@ -439,8 +435,6 @@ Resources:
   FunctionErrorNotificator:
     Type: AWS::Serverless::Function
     Properties:
-      Architectures:
-        - arm64
       Handler: luciferous_devio_index/lambda_handler/error_notificator.handler
       Policies:
         - Version: 2012-10-17
@@ -486,8 +480,6 @@ Resources:
   FunctionCreatePostsIndex:
     Type: AWS::Serverless::Function
     Properties:
-      Architectures:
-        - arm64
       AutoPublishAlias: prd
       Timeout: 600
       Environment:
@@ -523,8 +515,6 @@ Resources:
   FunctionCreateArchivesIndex:
     Type: AWS::Serverless::Function
     Properties:
-      Architectures:
-        - arm64
       AutoPublishAlias: prd
       Timeout: 600
       Environment:
@@ -611,8 +601,6 @@ Resources:
   FunctionCallPackage:
     Type: AWS::Serverless::Function
     Properties:
-      Architectures:
-        - arm64
       AutoPublishAlias: prd
       Environment:
         Variables:
@@ -642,8 +630,6 @@ Resources:
   FunctionMapSlug:
     Type: AWS::Serverless::Function
     Properties:
-      Architectures:
-        - arm64
       AutoPublishAlias: prd
       Environment:
         Variables:
@@ -678,8 +664,6 @@ Resources:
   FunctionCheckRootSitemap:
     Type: AWS::Serverless::Function
     Properties:
-      Architectures:
-        - arm64
       AutoPublishAlias: prd
       Environment:
         Variables:
@@ -713,8 +697,6 @@ Resources:
   FunctionCheckIndividualSitemap:
     Type: AWS::Serverless::Function
     Properties:
-      Architectures:
-        - arm64
       AutoPublishAlias: prd
       MemorySize: 512
       Timeout: 900
