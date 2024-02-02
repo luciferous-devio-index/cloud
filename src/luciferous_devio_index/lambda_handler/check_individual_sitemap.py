@@ -126,4 +126,7 @@ def check_updated_post(
 def put_posts(*, posts: List[str], table: Table):
     with table.batch_writer() as batch:
         for post_id in posts:
+            batch.delete_item(Key={"post_id": post_id})
+    with table.batch_writer() as batch:
+        for post_id in posts:
             batch.put_item(Item={"post_id": post_id})
