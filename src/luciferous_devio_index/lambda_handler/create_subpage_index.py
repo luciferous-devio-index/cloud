@@ -47,11 +47,11 @@ def handler(
     contents = sort_contents(target_dir=env.target_dir, contents=contents)
     text = create_index_text(target_dir=env.target_dir, contents=contents)
     upload_index(env=env, text=text, s3_client=s3_client)
-    create_invalidation(
-        distribution_id=env.distribution_id,
-        target_dir=env.target_dir,
-        cloudfront_client=cloudfront_client,
-    )
+    # create_invalidation(
+    #    distribution_id=env.distribution_id,
+    #    target_dir=env.target_dir,
+    #    cloudfront_client=cloudfront_client,
+    # )
 
 
 @logger.logging_function(with_return=False)

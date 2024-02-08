@@ -122,7 +122,7 @@ Resources:
     Properties:
       TopicArn: !Ref TopicS3NotificationPostsUpload
       Protocol: sqs
-      Endpoint: !GetAtt QueueCreateArchivesIndex.Arn
+      Endpoint: !GetAtt QueueCreatePostsIndex.Arn
 
   SubscriptionSnsSqsPostUploadMappingSlug:
     Type: AWS::SNS::Subscription
