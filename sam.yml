@@ -547,6 +547,32 @@ Resources:
         FunctionName: !Ref FunctionCreateArchivesIndex
         FunctionArnErrorNotificator: !GetAtt FunctionErrorNotificator.Arn
 
+  FunctionExecInvalidation:
+    Type: AWS::Serverless::Function
+    Properties:
+      AutoPublishAlias: prd
+      Timeout: 600
+      Environment:
+        Variables:
+          DISTRIBUTION_ID: !Ref Distribution
+      Handler: luciferous_devio_index/lambda_handler/exec_invalidation.handler
+      Events:
+        Daily:
+          Type: Schedule
+          Properties:
+            Enabled: true
+            Schedule: cron(0 18 * * ? *)
+      Policies:
+        - arn:aws:iam::aws:policy/CloudFrontFullAccess
+
+  LogStackExecInvalidation:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: log.yml
+      Parameters:
+        FunctionName: !Ref FunctionExecInvalidation
+        FunctionArnErrorNotificator: !GetAtt FunctionErrorNotificator.Arn
+
   RoleGlueJob:
     Type: AWS::IAM::Role
     Properties:
