@@ -7,7 +7,7 @@ from boto3.dynamodb.conditions import Attr
 from mypy_boto3_dynamodb import DynamoDBClient, DynamoDBServiceResource
 from mypy_boto3_sqs import SQSClient
 
-from luciferous_devio_index.common.aws import create_client
+from luciferous_devio_index.common.aws import create_client, create_resource
 from luciferous_devio_index.common.dataclasses import load_environment
 from luciferous_devio_index.common.logger import MyLogger
 
@@ -15,6 +15,7 @@ from luciferous_devio_index.common.logger import MyLogger
 @dataclass
 class EnvironmentVariables:
     url_feed: str
+    table_name: str
     queue_url: str
 
 
@@ -22,11 +23,24 @@ logger = MyLogger(__name__)
 
 
 @logger.logging_handler(with_return=False)
-def handler(_event: dict, _context, client_sqs: SQSClient = create_client("sqs")):
+def handler(
+    _event: dict,
+    _context,
+    client_sqs: SQSClient = create_client("sqs"),
+    client_ddb: DynamoDBClient = create_client("dynamodb"),
+    resource_ddb: DynamoDBServiceResource = create_resource("dynamodb"),
+):
     env = load_environment(class_dataclass=EnvironmentVariables)
     entries = get_feed_entries(url=env.url_feed)
-    list_url = parse_url(entries=entries)
-    send_messages(list_url=list_url, queue_url=env.queue_url, client=client_sqs)
+    list_post_id = parse_post_id(entries)
+    check_post_id(list_post_id=list_post_id)
+    for post_id in list_post_id:
+        put_post_id(
+            post_id=post_id,
+            table_name=env.table_name,
+            ddb_client=client_ddb,
+            ddb_resource=resource_ddb,
+        )
 
 
 @logger.logging_function()
@@ -37,6 +51,12 @@ def get_feed_entries(*, url: str) -> List[dict]:
 @logger.logging_function(write_log=False)
 def parse_post_id(*, entries: List[dict]) -> List[str]:
     return [str(x["post-id"]) for x in entries]
+
+
+@logger.logging_function(write_log=True)
+def check_post_id(*, list_post_id: list[str]):
+    for post_id in list_post_id:
+        int(post_id)
 
 
 @logger.logging_function()

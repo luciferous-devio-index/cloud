@@ -412,6 +412,7 @@ Resources:
         Variables:
           URL_FEED: https://dev.classmethod.jp/feed
           QUEUE_URL: !Ref QueueResolvePostId
+          TABLE_NAME: !Ref TableListPostId
       Events:
         Schedule:
           Type: Schedule
@@ -780,7 +781,7 @@ Resources:
       Policies:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole
         - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
-      ReservedConcurrentExecutions: 5
+      ReservedConcurrentExecutions: 10
 
   LogStackResolvePostId:
     Type: AWS::CloudFormation::Stack
