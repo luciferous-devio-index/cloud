@@ -30,6 +30,8 @@ def handler(
     env = load_environment(class_dataclass=EnvironmentVariables)
     table = resource_dynamodb.Table(env.table_post_id)
     url = parse_url(event=event)
+    if is_target(url=url):
+        return
     slug = parse_slug(url=url)
     post_id = get_post_id(slug=slug, url_post=env.url_post)
     logger.info("url, slug, and post_id", url=url, slug=slug, post_id=post_id)
@@ -41,6 +43,12 @@ def parse_url(*, event: dict) -> str:
     if (url := event.get("url")) is not None:
         return url
     return event["Records"][0]["body"]
+
+
+@logger.logging_function()
+def is_target(*, url: str) -> bool:
+    part = url.split("/")
+    return part[3] != "articles"
 
 
 @logger.logging_function()
