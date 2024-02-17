@@ -32,7 +32,7 @@ def handler(
 ):
     env = load_environment(class_dataclass=EnvironmentVariables)
     entries = get_feed_entries(url=env.url_feed)
-    list_post_id = parse_post_id(entries)
+    list_post_id = parse_post_id(entries=entries)
     check_post_id(list_post_id=list_post_id)
     for post_id in list_post_id:
         put_post_id(
