@@ -774,7 +774,7 @@ Resources:
         Queue:
           Type: SQS
           Properties:
-            Enabled: true
+            Enabled: false
             BatchSize: 1
             Queue: !GetAtt QueueResolvePostId.Arn
       Handler: luciferous_devio_index/lambda_handler/post_id_resolver.handler
